@@ -1,0 +1,8 @@
+node_modules
+**/*.DS_Store
+.tern-project
+npm-debug.log*
+coverage
+.nyc_output
+public/bundle.js
+public/bundle.js.map
