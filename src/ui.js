@@ -1,5 +1,11 @@
 import * as board from './board';
 
+export function getToken(datum) {
+  if (datum === 0) return '';
+  if (datum === 1) return 'x';
+  return 'o';
+}
+
 export const renderBoardHTML = boardData =>
 `<table>
   <tbody>${boardData.map((el, idx) => `\
@@ -11,4 +17,4 @@ export const renderBoardHTML = boardData =>
 </table>`;
 
 export const renderEmptyBoardHTML = () =>
-renderBoardHTML(board.getEmptyBoard());
+renderBoardHTML(board.getEmptyBoard().map(getToken));

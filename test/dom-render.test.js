@@ -18,7 +18,7 @@ test('tests can access mock dom', (t) => {
 test('rendered board is inserted into dom', (t) => {
   t.context.renderBoard(ui.renderEmptyBoardHTML());
   const actual = t.context.$('td').map((idx, el) => t.context.$(el).text()).get();
-  const expected = [0, 0, 0, 0, 0, 0, 0, 0, 0].map(String);
+  const expected = ['', '', '', '', '', '', '', '', ''];
   t.deepEqual(actual, expected);
 });
 
