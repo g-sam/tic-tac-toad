@@ -15,4 +15,6 @@ export const getEmptyIndices = board =>
       [],
   );
 
+export const isBoardFull = board => (getEmptyIndices(board).length === 0);
+
 export default null;
