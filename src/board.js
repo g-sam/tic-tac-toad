@@ -8,4 +8,11 @@ export const movePlayerToIndex = (board, player, idx) => [
   ...board.slice(idx + 1),
 ];
 
+export const getEmptyIndices = board =>
+  board.reduce(
+    (acc, curr, idx) =>
+      (curr === 0 ? acc.concat(idx) : acc),
+      [],
+  );
+
 export default null;

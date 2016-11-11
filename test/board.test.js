@@ -15,3 +15,10 @@ test('move player to index', (t) => {
     [0, 0, 0, 1, 0, 0, 0, 0, 0],
   );
 });
+
+test('get empty indices', (t) => {
+  t.deepEqual(
+    board.getEmptyIndices([0, 2, 0, 1, 0, 0, 2, 0, 0]),
+    [0, 2, 4, 5, 7, 8],
+  );
+});
