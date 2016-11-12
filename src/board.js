@@ -18,16 +18,16 @@ export const getEmptyIndices = board =>
 
 export const isBoardFull = board => (getEmptyIndices(board).length === 0);
 
-export const rowIndicesAt = i => j =>
+const rowIndicesAt = i => j =>
   j + (i * 3);
 
-export const colIndicesAt = i => j =>
+const colIndicesAt = i => j =>
   (j * 3) + i;
 
-export const downDiagIndices = i => j =>
+const downDiagIndices = i => j =>
   (i * j) + i;
 
-export const upDiagIndices = i => j =>
+const upDiagIndices = i => j =>
   (i * j) + (2 * j);
 
 export const generateIndicesOfLines = () => {
@@ -40,9 +40,13 @@ export const generateIndicesOfLines = () => {
     .concat([range.map(upDiagIndices(2))]);
 };
 
-export const isWinner = (board, player) => {
+const indicesOfWinningLines = generateIndicesOfLines();
 
-};
+const isWinningLine = (board, player) => line =>
+  line.every(i => board[i] === player);
 
+export const isWinner = (board, player) =>
+  indicesOfWinningLines
+    .some(isWinningLine(board, player));
 
 export default null;
