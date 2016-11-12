@@ -27,3 +27,17 @@ test('checks if board is full', (t) => {
   t.false(board.isBoardFull([0, 2, 0, 1, 0, 0, 2, 0, 0]));
   t.true(board.isBoardFull([1, 2, 2, 1, 1, 2, 2, 1, 2]));
 });
+
+test('generate indices of winning lines', (t) => {
+  t.deepEqual(
+    board.generateIndicesOfLines(),
+    [[0, 1, 2],
+     [0, 3, 6],
+     [3, 4, 5],
+     [1, 4, 7],
+     [6, 7, 8],
+     [2, 5, 8],
+     [2, 4, 6],
+     [0, 4, 8]],
+  );
+});
