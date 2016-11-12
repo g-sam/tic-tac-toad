@@ -3,7 +3,7 @@ import { chain } from 'ramda';
 export const getEmptyBoard = () =>
   Array(9).fill(0);
 
-export const movePlayerToIndex = (board, player, idx) => [
+export const movePlayerToIndex = (board, player) => idx => [
   ...board.slice(0, idx),
   player,
   ...board.slice(idx + 1),

@@ -13,7 +13,7 @@ test('generates empty board', (t) => {
 });
 
 test('move player to index', (t) => {
-  const newBoard = board.movePlayerToIndex(board.getEmptyBoard(), 1, 3);
+  const newBoard = board.movePlayerToIndex(board.getEmptyBoard(), 1)(3);
   t.deepEqual(
     newBoard,
     [
