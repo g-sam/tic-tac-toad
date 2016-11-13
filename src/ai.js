@@ -17,5 +17,4 @@ const switchPlayer = player =>
 export const deeplyScoreMove = player => board =>
   (fromBoard.isGameOver(board, player) ?
     score(board, player) :
-    -Math.max.apply(null, scoreNextMoves(board, switchPlayer(player))));
-
+    -Math.max(...scoreNextMoves(board, switchPlayer(player))));
