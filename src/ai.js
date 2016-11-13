@@ -18,3 +18,10 @@ export const deeplyScoreMove = player => board =>
   (fromBoard.isGameOver(board, player) ?
     score(board, player) :
     -Math.max(...scoreNextMoves(board, switchPlayer(player))));
+
+export const getBestMove = (board, player) =>
+  fromBoard.getEmptyIndices(board, player)[
+    scoreNextMoves(board, player)
+    .reduce((idxOfMax, crntScore, idx, scores) =>
+        (crntScore > scores[idxOfMax] ? idx : idxOfMax), 0)
+  ];
