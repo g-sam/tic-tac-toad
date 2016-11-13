@@ -11,7 +11,7 @@ export const scoreNextMoves = (board, player, depth = 0) =>
   getNextBoards(board, player)
     .map(deeplyScoreMove(player, depth)); // eslint-disable-line no-use-before-define
 
-const switchPlayer = player =>
+export const switchPlayer = player =>
   (player === 1 ? 2 : 1);
 
 export const deeplyScoreMove = (player, depth) => board =>
