@@ -6,12 +6,12 @@ test('scores a board for a player', (t) => {
     1, 0, 0,
     2, 1, 2,
     2, 0, 1,
-  ], 1), 1);
+  ], 1, 0), 100);
   t.is(ai.score([
     1, 0, 0,
     2, 1, 2,
     2, 0, 1,
-  ], 2), 0);
+  ], 2, 0), 0);
 });
 
 test('generates next possible boards', (t) => {
@@ -41,7 +41,7 @@ test('scores moves looking one move ahead', (t) => {
     1, 1, 0,
     2, 1, 2,
     2, 0, 2,
-  ], 2), [1, 1]);
+  ], 2), [100, 100]);
 
   t.deepEqual(ai.scoreNextMoves([
     1, 2, 1,
@@ -55,17 +55,17 @@ test('scores moves looking ahead to endgame', (t) => {
     1, 0, 1,
     2, 1, 2,
     2, 0, 0,
-  ], 2), [-1, -1, -1]);
+  ], 2), [-99, -99, -99]);
   t.deepEqual(ai.scoreNextMoves([
     1, 0, 1,
     2, 1, 2,
     2, 0, 0,
-  ], 1), [1, 1, 1]);
+  ], 1), [100, 98, 100]);
   t.deepEqual(ai.scoreNextMoves([
     1, 0, 1,
     2, 0, 2,
     2, 0, 0,
-  ], 1), [1, 1, -1, -1]);
+  ], 1), [100, 98, -99, -99]);
 });
 
 /* There follow tests for all distinct strategic situations. See https://en.wikipedia.org/wiki/Tic-tac-toe under 'Strategy' */
@@ -116,7 +116,7 @@ test('strategy 6: picks opposite corner', (t) => {
     0, 0, 1,
     0, 2, 0,
     0, 0, 0,
-  ], 1), 6);
+  ], 2), 6);
 });
 */
 
@@ -134,4 +134,12 @@ test('strategy 8: picks empty side', (t) => {
     0, 2, 0,
     1, 0, 0,
   ], 2), 1);
+});
+
+test('picks move than wins most quickly', (t) => {
+  t.deepEqual(ai.getBestMove([
+    1, 0, 0,
+    0, 1, 0,
+    2, 0, 2,
+  ], 2), 7);
 });

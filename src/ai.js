@@ -1,23 +1,23 @@
 import * as fromBoard from './board';
 
-export const score = (board, player) =>
-  (fromBoard.isWinner(board, player) ? 1 : 0);
+export const score = (board, player, depth) =>
+  (fromBoard.isWinner(board, player) ? 100 - depth : 0);
 
 export const getNextBoards = (board, player) =>
     fromBoard.getEmptyIndices(board, player)
     .map(fromBoard.movePlayerToIndex(board, player));
 
-export const scoreNextMoves = (board, player) =>
+export const scoreNextMoves = (board, player, depth = 0) =>
   getNextBoards(board, player)
-    .map(deeplyScoreMove(player)); // eslint-disable-line no-use-before-define
+    .map(deeplyScoreMove(player, depth)); // eslint-disable-line no-use-before-define
 
 const switchPlayer = player =>
   (player === 1 ? 2 : 1);
 
-export const deeplyScoreMove = player => board =>
+export const deeplyScoreMove = (player, depth) => board =>
   (fromBoard.isGameOver(board, player) ?
-    score(board, player) :
-    -Math.max(...scoreNextMoves(board, switchPlayer(player))));
+    score(board, player, depth) :
+    -Math.max(...scoreNextMoves(board, switchPlayer(player), depth + 1)));
 
 export const getBestMove = (board, player) =>
   fromBoard.getEmptyIndices(board, player)[
