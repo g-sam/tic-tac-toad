@@ -81,3 +81,21 @@ test('check if player has won', (t) => {
     1, 0, 0,
   ], 2));
 });
+
+test('checks if game is over', (t) => {
+  t.true(board.isGameOver([
+    1, 2, 0,
+    1, 2, 0,
+    1, 0, 0,
+  ], 1));
+  t.true(board.isGameOver([
+    1, 2, 1,
+    1, 2, 2,
+    2, 1, 2,
+  ], 2));
+  t.false(board.isGameOver([
+    1, 2, 1,
+    1, 0, 2,
+    2, 1, 2,
+  ], 2));
+});

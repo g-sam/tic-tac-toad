@@ -49,4 +49,7 @@ export const isWinner = (board, player) =>
   indicesOfWinningLines
     .some(isWinningLine(board, player));
 
+export const isGameOver = (board, player) =>
+  isWinner(board, player) || isBoardFull(board);
+
 export default null;
