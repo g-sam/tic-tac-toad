@@ -14,3 +14,12 @@ test('convert data to board token', (t) => {
   t.is(ui.getToken(1), 'x');
   t.is(ui.getToken(2), 'o');
 });
+
+test('gets game type options with bound click handlers', (t) => {
+  ui.getGameTypeOptions(Promise.resolve())
+    .options
+    .map(opt => opt.clickHandler())
+    .forEach((p, idx) =>
+        p.then(actual => t.is(actual, idx)),
+    );
+});

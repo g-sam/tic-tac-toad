@@ -13,7 +13,8 @@
   },
   "babel": {
     "presets": [
-      "latest"
+      "latest",
+      "stage-3"
     ]
   },
   "ava": {
@@ -29,6 +30,7 @@
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.7",
     "babel-preset-latest": "^6.16.0",
+    "babel-preset-stage-3": "^6.17.0",
     "cheerio": "^0.22.0",
     "eslint": "^3.9.1",
     "eslint-config-airbnb-base": "^10.0.1",

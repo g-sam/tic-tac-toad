@@ -18,3 +18,28 @@ export const renderBoardHTML = boardData =>
 
 export const renderEmptyBoardHTML = () =>
 renderBoardHTML(board.getEmptyBoard().map(getToken));
+
+const getOptions = () => ({
+  title: 'Select game type',
+  options: [
+    { text: 'Human vs. human' },
+    { text: 'Computer vs. human' },
+    { text: 'Computer vs. computer' },
+  ],
+});
+
+export const bindOptions = (optionObj, awaitSelection) => ({
+  ...optionObj,
+  options: optionObj.options.map((option, idx) => ({
+    ...option,
+    clickHandler: () =>
+      awaitSelection.then((() => idx).bind(null, idx)),
+  })),
+});
+
+export const getGameTypeOptions = awaitSelection =>
+  bindOptions(
+    getOptions(),
+    awaitSelection,
+  );
+
