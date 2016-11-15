@@ -28,18 +28,17 @@ const getOptions = () => ({
   ],
 });
 
-export const bindOptions = (optionObj, awaitSelection) => ({
+export const bindOptions = (optionObj, resolve) => ({
   ...optionObj,
   options: optionObj.options.map((option, idx) => ({
     ...option,
-    clickHandler: () =>
-      awaitSelection.then((() => idx).bind(null, idx)),
+    clickHandler: resolve.bind(null, idx),
   })),
 });
 
-export const getGameTypeOptions = awaitSelection =>
+export const getGameTypeOptions = resolve =>
   bindOptions(
     getOptions(),
-    awaitSelection,
+    resolve,
   );
 

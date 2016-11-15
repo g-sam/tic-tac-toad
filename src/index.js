@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import DOMRenderer from './dom-render';
-import * as ui from './ui';
+import Controller from './controller';
 
-const renderer = new DOMRenderer($);
-renderer.renderBoard(ui.renderEmptyBoardHTML());
+const dom = new DOMRenderer($);
+const controller = new Controller(dom);
+controller.execute();

@@ -1,5 +1,6 @@
 import test from 'ava';
 import { load } from 'cheerio';
+import { spy } from 'sinon';
 import * as ui from '../src/ui';
 
 test('renders board values', (t) => {
@@ -16,10 +17,11 @@ test('convert data to board token', (t) => {
 });
 
 test('gets game type options with bound click handlers', (t) => {
-  ui.getGameTypeOptions(Promise.resolve())
+  const resolve = spy();
+  ui.getGameTypeOptions(resolve)
     .options
-    .map(opt => opt.clickHandler())
-    .forEach((p, idx) =>
-        p.then(actual => t.is(actual, idx)),
-    );
+    .forEach((opt, idx) => {
+      opt.clickHandler();
+      t.true(resolve.calledWith(idx));
+    });
 });
