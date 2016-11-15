@@ -1,12 +1,15 @@
 import test from 'ava';
-import { load } from 'cheerio';
+import jquery from 'jquery';
+import { jsdom } from 'jsdom';
+import { spy } from 'sinon';
 import { readFileSync } from 'fs';
 import DOMRenderer from '../src/dom-render';
 
 const html = readFileSync('../public/index.html', 'utf8');
 
 test.beforeEach((t) => {
-  const $ = load(html);
+  const window = jsdom(html).defaultView;
+  const $ = jquery(window);
   t.context = new DOMRenderer($); // eslint-disable-line no-param-reassign
 });
 
@@ -21,17 +24,22 @@ test('board is inserted into dom', (t) => {
   t.deepEqual(actual, expected);
 });
 
-/*
-test('options inserted into dom as buttons with correct labels', (t) => {
-  t.context.renderOptions({
+test('options inserted into dom with correct attributes', (t) => {
+  const spyer = spy();
+  const optionData = {
     title: 'test',
     options: [{
       text: 'option 1',
-      clickHandler: () => null,
+      clickHandler: spyer,
     }],
-  });
-  const actual = t.context.$('button').map((idx, el) => t.context.$(el).text()).get();
+  };
+  t.context.renderOptions(optionData);
 
-  t.deepEqual(actual, ['option 1']);
+  const labels = t.context.$('button').map((idx, el) => t.context.$(el).text()).get();
+  const title = t.context.$('.buttons-title').text();
+  t.context.$('button').each((idx, el) => t.context.$(el).click());
+
+  t.deepEqual(labels, ['option 1']);
+  t.deepEqual(title, 'test');
+  t.is(spyer.callCount, 1);
 });
-*/

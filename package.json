@@ -36,6 +36,7 @@
     "eslint-config-airbnb-base": "^10.0.1",
     "eslint-plugin-import": "^2.2.0",
     "husky": "^0.11.9",
+    "jsdom": "^9.8.3",
     "nyc": "^8.4.0",
     "sinon": "^1.17.6",
     "webpack": "^1.13.3"
