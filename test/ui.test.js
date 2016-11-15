@@ -10,10 +10,21 @@ test('converts board to array of tokens', (t) => {
 
 test('gets game type options with bound click handlers', (t) => {
   const resolve = spy();
-  ui.getGameTypeOptions(resolve)
+  ui.getOptionsData('game', resolve)
     .options
     .forEach((opt, idx) => {
       opt.clickHandler();
       t.true(resolve.calledWith(idx));
+    });
+});
+
+test('gets either player or game options', (t) => {
+  const has = Object.prototype.hasOwnProperty;
+  ['game', 'player']
+    .map(ui.getOptionsFor)
+    .forEach((optionData) => {
+      t.true(has.call(optionData, 'title'));
+      t.true(has.call(optionData, 'options'));
+      optionData.options.map(option => t.true(has.call(option, 'text')));
     });
 });

@@ -7,8 +7,8 @@ export default class Controller {
   execute() {
     this.dom.renderBoard(ui.getBoardData());
   }
-  getGameType() {
+  getOptions(type) {
     return new Promise(resolve =>
-    this.dom.renderOptions(ui.getGameTypeOptions(resolve)));
+    this.dom.renderOptions(ui.getOptionsData(type, resolve)));
   }
 }

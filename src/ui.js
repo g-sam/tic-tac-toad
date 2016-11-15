@@ -9,14 +9,28 @@ export const getToken = (player) => {
 export const getBoardData = (board = fromBoard.getEmptyBoard()) =>
   board.map(getToken);
 
-const getOptions = () => ({
-  title: 'Select game type',
-  options: [
-    { text: 'Human vs. human' },
-    { text: 'Computer vs. human' },
-    { text: 'Computer vs. computer' },
-  ],
-});
+export const getOptionsFor = (type) => {
+  if (type === 'game') {
+    return {
+      title: 'Select game type',
+      options: [
+        { text: 'Human vs. human' },
+        { text: 'Computer vs. human' },
+        { text: 'Computer vs. computer' },
+      ],
+    };
+  }
+  if (type === 'player') {
+    return {
+      title: 'Choose who goes first',
+      options: [
+        { text: 'Me!!!' },
+        { text: 'Computer' },
+      ],
+    };
+  }
+  return {};
+};
 
 export const bindOptions = (optionObj, resolve) => ({
   ...optionObj,
@@ -26,9 +40,9 @@ export const bindOptions = (optionObj, resolve) => ({
   })),
 });
 
-export const getGameTypeOptions = resolve =>
+export const getOptionsData = (type, resolve) =>
   bindOptions(
-    getOptions(),
+    getOptionsFor(type),
     resolve,
   );
 

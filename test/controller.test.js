@@ -16,8 +16,8 @@ test('execute method calls renderBoard', (t) => {
   t.true(t.context.stub.renderBoard.calledOnce);
 });
 
-test('getGameType calls renderOptions and returns promise', (t) => {
-  const actual = t.context.controller.getGameType();
+test('getOptions calls renderOptions and returns promise', (t) => {
+  const actual = t.context.controller.getOptions('game');
   t.truthy(actual.then);
   t.true(t.context.stub.renderOptions.calledOnce);
 });
