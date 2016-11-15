@@ -1,19 +1,11 @@
 import test from 'ava';
-import { load } from 'cheerio';
 import { spy } from 'sinon';
 import * as ui from '../src/ui';
 
-test('renders board values', (t) => {
-  const $ = load(ui.renderEmptyBoardHTML());
-  const actual = $('td').map((idx, el) => $(el).text()).get();
-  const expected = ['', '', '', '', '', '', '', '', ''];
+test('converts board to array of tokens', (t) => {
+  const actual = ui.getBoardData([1, 0, 1, 2, 0, 0, 0, 0, 2]);
+  const expected = ['x', '', 'x', 'o', '', '', '', '', 'o'];
   t.deepEqual(actual, expected);
-});
-
-test('convert data to board token', (t) => {
-  t.is(ui.getToken(0), '');
-  t.is(ui.getToken(1), 'x');
-  t.is(ui.getToken(2), 'o');
 });
 
 test('gets game type options with bound click handlers', (t) => {

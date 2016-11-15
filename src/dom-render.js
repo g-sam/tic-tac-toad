@@ -2,11 +2,22 @@ export default class DOMRenderer {
   constructor(context) {
     this.$ = context;
   }
-  renderBoard(html) {
-    this.$('.board').html(html);
+  static getBoardHTML(boardData) {
+    return `<table>
+  <tbody>${boardData.map((el, idx) => `\
+    ${idx % 3 === 0 ? '\n   <tr>' : ''}
+    <td>${el}</td>\
+    ${idx % 3 === 2 ? '\n   </tr>' : ''}`)
+    .join('')}
+  </tbody>
+</table>`;
   }
-  renderOptions(options) {
-    options.forEach(({ text, clickHandler }) =>
+  renderBoard(boardData) {
+    this.$('.board')
+      .html(DOMRenderer.getBoardHTML(boardData));
+  }
+  renderOptions(optionData) {
+    optionData.options.forEach(({ text, clickHandler }) =>
         this.$('<button>')
         .text(text)
         .click(clickHandler)

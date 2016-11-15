@@ -1,23 +1,13 @@
-import * as board from './board';
+import * as fromBoard from './board';
 
-export function getToken(datum) {
-  if (datum === 0) return '';
-  if (datum === 1) return 'x';
-  return 'o';
-}
+export const getToken = (player) => {
+  if (player === 1) return 'x';
+  if (player === 2) return 'o';
+  return '';
+};
 
-export const renderBoardHTML = boardData =>
-`<table>
-  <tbody>${boardData.map((el, idx) => `\
-    ${idx % 3 === 0 ? '\n   <tr>' : ''}
-    <td>${el}</td>\
-    ${idx % 3 === 2 ? '\n   </tr>' : ''}`)
-    .join('')}
-  </tbody>
-</table>`;
-
-export const renderEmptyBoardHTML = () =>
-renderBoardHTML(board.getEmptyBoard().map(getToken));
+export const getBoardData = (board = fromBoard.getEmptyBoard()) =>
+  board.map(getToken);
 
 const getOptions = () => ({
   title: 'Select game type',

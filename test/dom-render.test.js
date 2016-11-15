@@ -2,7 +2,6 @@ import test from 'ava';
 import { load } from 'cheerio';
 import { readFileSync } from 'fs';
 import DOMRenderer from '../src/dom-render';
-import * as ui from '../src/ui';
 
 const html = readFileSync('../public/index.html', 'utf8');
 
@@ -15,10 +14,24 @@ test('tests can access mock dom', (t) => {
   t.truthy(t.context.$);
 });
 
-test('rendered board is inserted into dom', (t) => {
-  t.context.renderBoard(ui.renderEmptyBoardHTML());
+test('board is inserted into dom', (t) => {
+  t.context.renderBoard(['', '', '', '', '', '', '', '', '']);
   const actual = t.context.$('td').map((idx, el) => t.context.$(el).text()).get();
   const expected = ['', '', '', '', '', '', '', '', ''];
   t.deepEqual(actual, expected);
 });
 
+/*
+test('options inserted into dom as buttons with correct labels', (t) => {
+  t.context.renderOptions({
+    title: 'test',
+    options: [{
+      text: 'option 1',
+      clickHandler: () => null,
+    }],
+  });
+  const actual = t.context.$('button').map((idx, el) => t.context.$(el).text()).get();
+
+  t.deepEqual(actual, ['option 1']);
+});
+*/
