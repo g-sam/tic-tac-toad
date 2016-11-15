@@ -36,7 +36,7 @@ test('options inserted into dom with correct attributes', (t) => {
   t.context.renderOptions(optionData);
 
   const labels = t.context.$('button').map((idx, el) => t.context.$(el).text()).get();
-  const title = t.context.$('.buttons-title').text();
+  const title = t.context.$('.buttons h4').text();
   t.context.$('button').each((idx, el) => t.context.$(el).click());
 
   t.deepEqual(labels, ['option 1']);
