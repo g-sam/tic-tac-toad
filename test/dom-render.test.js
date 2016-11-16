@@ -26,12 +26,12 @@ test('board is inserted into dom', (t) => {
 });
 
 test('options inserted into dom with correct attributes', (t) => {
-  const spyer = spy();
+  const clickHandler = spy();
   const optionData = {
     title: 'test',
     options: [{
       text: 'option 1',
-      clickHandler: spyer,
+      clickHandler,
     }],
   };
   t.context.renderOptions(optionData);
@@ -42,5 +42,26 @@ test('options inserted into dom with correct attributes', (t) => {
 
   t.deepEqual(labels, ['option 1']);
   t.deepEqual(title, 'test');
-  t.is(spyer.callCount, 1);
+  t.is(clickHandler.callCount, 1);
+});
+
+test('board is inserted into dom with correct attributes', (t) => {
+  const clickHandler = spy();
+  const boardData = [
+    { text: 'x' },
+    { text: '', clickHandler },
+    { text: 'x' },
+    { text: 'o' },
+    { text: '', clickHandler },
+    { text: '', clickHandler },
+    { text: '', clickHandler },
+    { text: '', clickHandler },
+    { text: 'o' },
+  ];
+  t.context.renderBoard(boardData);
+  const actualClasses = t.context.$('td').map((idx, el) => (t.context.$(el).attr('class') || '')).get();
+  const expectedClasses = ['', 'clickable', '', '', 'clickable', 'clickable', 'clickable', 'clickable', ''];
+  t.context.$('td').each((idx, el) => t.context.$(el).click());
+  t.deepEqual(actualClasses, expectedClasses);
+  t.is(clickHandler.callCount, 5);
 });

@@ -15,6 +15,13 @@ export default class DOMRenderer {
   renderBoard(boardData) {
     this.$('.board')
       .html(DOMRenderer.getBoardHTML(boardData));
+    boardData.forEach(({ clickHandler }, idx) => {
+      if (clickHandler) {
+        this.$('.board td').eq(idx)
+          .click(clickHandler)
+          .addClass('clickable');
+      }
+    });
   }
   renderOptions(optionData) {
     this.$('.buttons').html(`<h4>${optionData.title}</h4>`);
