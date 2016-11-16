@@ -17,7 +17,7 @@ export default class DOMRenderer {
       .html(DOMRenderer.getBoardHTML(boardData));
   }
   renderOptions(optionData) {
-    this.$('.buttons').append(`<h4>${optionData.title}</h4>`);
+    this.$('.buttons').html(`<h4>${optionData.title}</h4>`);
     optionData.options.forEach(({ text, clickHandler }) =>
         this.$('<button>')
         .text(text)
