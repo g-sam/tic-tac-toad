@@ -6,9 +6,24 @@ export default class Controller {
   }
   execute() {
     this.dom.renderBoard(ui.getBoardData());
+    this.getAllOptions();
+  }
+  getAllOptions() {
+    return Promise.resolve()
+      .then(this.getOptions('game'))
+      .then(this.getOptions('player'));
   }
   getOptions(type) {
-    return new Promise(resolve =>
-    this.dom.renderOptions(ui.getOptionsData(type, resolve)));
+    const that = this;
+    return function optionsReducer(options = {}) {
+      if (options.game === 0 || options.game === 2) {
+        return Promise.resolve({
+          ...options,
+          player: 0,
+        });
+      }
+      return new Promise(resolve =>
+          that.dom.renderOptions(ui.getOptionsData(type, resolve, options)));
+    };
   }
 }

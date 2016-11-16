@@ -14,7 +14,7 @@ test('gets game type options with bound click handlers', (t) => {
     .options
     .forEach((opt, idx) => {
       opt.clickHandler();
-      t.true(resolve.calledWith(idx));
+      t.deepEqual(...resolve.args[idx], { game: idx });
     });
 });
 
@@ -27,4 +27,9 @@ test('gets either player or game options', (t) => {
       t.true(has.call(optionData, 'options'));
       optionData.options.map(option => t.true(has.call(option, 'text')));
     });
+});
+
+test('constructs an argument for binding that merges new options with previous', (t) => {
+  const addSecondOption = ui.getResolveArg('second', { first: 1 });
+  t.deepEqual(addSecondOption(2), { first: 1, second: 2 });
 });

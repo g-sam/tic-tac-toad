@@ -4,20 +4,26 @@ import Controller from '../src/controller';
 import DOMRenderer from '../src/dom-render';
 
 test.beforeEach((t) => {
-  const stub = createStubInstance(DOMRenderer);
+  const dom = createStubInstance(DOMRenderer);
   t.context = { // eslint-disable-line no-param-reassign
-    stub,
-    controller: new Controller(stub),
+    dom,
+    controller: new Controller(dom),
   };
 });
 
 test('execute method calls renderBoard', (t) => {
   t.context.controller.execute();
-  t.true(t.context.stub.renderBoard.calledOnce);
+  t.true(t.context.dom.renderBoard.calledOnce);
 });
 
-test('getOptions calls renderOptions and returns promise', (t) => {
-  const actual = t.context.controller.getOptions('game');
+test('getOptions returns a function that calls renderOptions and returns promise', (t) => {
+  const actual = t.context.controller.getOptions('game')();
   t.truthy(actual.then);
-  t.true(t.context.stub.renderOptions.calledOnce);
+  t.true(t.context.dom.renderOptions.calledOnce);
+});
+
+test('selecting game 0 or 1 returns promise and skips rendering of player options', (t) => {
+  const actual = t.context.controller.getOptions('player')({ game: 0 });
+  t.truthy(actual.then);
+  t.true(t.context.dom.renderOptions.notCalled);
 });

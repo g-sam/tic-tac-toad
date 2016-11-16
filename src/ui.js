@@ -32,17 +32,24 @@ export const getOptionsFor = (type) => {
   return {};
 };
 
-export const bindOptions = (optionObj, resolve) => ({
+export const getResolveArg = (type, oldOptions) => idx => ({
+  ...oldOptions,
+  [type]: idx,
+});
+
+export const bindOptions = (optionObj, resolve, getArg) => ({
   ...optionObj,
   options: optionObj.options.map((option, idx) => ({
     ...option,
-    clickHandler: resolve.bind(null, idx),
+    clickHandler: resolve.bind(null, getArg(idx)),
   })),
 });
 
-export const getOptionsData = (type, resolve) =>
+
+export const getOptionsData = (type, resolve, oldOptions) =>
   bindOptions(
     getOptionsFor(type),
     resolve,
+    getResolveArg(type, oldOptions),
   );
 
