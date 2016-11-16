@@ -5,7 +5,7 @@ export default class Controller {
     this.dom = renderer;
   }
   execute() {
-    this.dom.renderBoard(ui.getBoardData());
+    this.dom.renderBoard(ui.getBoardTokens());
     this.getAllOptions();
   }
   getAllOptions() {

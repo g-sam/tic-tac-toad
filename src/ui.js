@@ -6,8 +6,22 @@ export const getToken = (player) => {
   return '';
 };
 
-export const getBoardData = (board = fromBoard.getEmptyBoard()) =>
-  board.map(getToken);
+export const getBoardTokens = (board = fromBoard.getEmptyBoard()) =>
+  board.map(player => ({ text: getToken(player) }));
+
+export const bindBoard = (boardTokens, resolve, getArg) =>
+  boardTokens
+    .map((token, idx) => (!token.text.length ? ({
+      ...token,
+      clickHandler: resolve.bind(null, getArg(idx)),
+    }) : token));
+
+export const getBoardData = (player, resolve, board) =>
+  bindBoard(
+    getBoardTokens(board),
+    resolve,
+    fromBoard.movePlayerToIndex(board, player),
+  );
 
 export const getOptionsFor = (type) => {
   if (type === 'game') {

@@ -4,9 +4,9 @@ export default class DOMRenderer {
   }
   static getBoardHTML(boardData) {
     return `<table>
-  <tbody>${boardData.map((el, idx) => `\
+  <tbody>${boardData.map(({ text }, idx) => `\
     ${idx % 3 === 0 ? '\n   <tr>' : ''}
-    <td>${el}</td>\
+    <td>${text}</td>\
     ${idx % 3 === 2 ? '\n   </tr>' : ''}`)
     .join('')}
   </tbody>

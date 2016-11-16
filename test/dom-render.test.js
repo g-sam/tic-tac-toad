@@ -18,9 +18,10 @@ test('tests can access mock dom', (t) => {
 });
 
 test('board is inserted into dom', (t) => {
-  t.context.renderBoard(['', '', '', '', '', '', '', '', '']);
+  const boardTokens = [{ text: 'x' }, { text: '' }, { text: 'x' }, { text: 'o' }, { text: '' }, { text: '' }, { text: '' }, { text: '' }, { text: 'o' }];
+  t.context.renderBoard(boardTokens);
   const actual = t.context.$('td').map((idx, el) => t.context.$(el).text()).get();
-  const expected = ['', '', '', '', '', '', '', '', ''];
+  const expected = ['x', '', 'x', 'o', '', '', '', '', 'o'];
   t.deepEqual(actual, expected);
 });
 

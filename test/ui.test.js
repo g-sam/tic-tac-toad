@@ -3,8 +3,8 @@ import { spy } from 'sinon';
 import * as ui from '../src/ui';
 
 test('converts board to array of tokens', (t) => {
-  const actual = ui.getBoardData([1, 0, 1, 2, 0, 0, 0, 0, 2]);
-  const expected = ['x', '', 'x', 'o', '', '', '', '', 'o'];
+  const actual = ui.getBoardTokens([1, 0, 1, 2, 0, 0, 0, 0, 2]);
+  const expected = [{ text: 'x' }, { text: '' }, { text: 'x' }, { text: 'o' }, { text: '' }, { text: '' }, { text: '' }, { text: '' }, { text: 'o' }];
   t.deepEqual(actual, expected);
 });
 
@@ -32,4 +32,15 @@ test('gets either player or game options', (t) => {
 test('constructs an argument for binding that merges new options with previous', (t) => {
   const addSecondOption = ui.getResolveArg('second', { first: 1 });
   t.deepEqual(addSecondOption(2), { first: 1, second: 2 });
+});
+
+test('gets board tokens with bound click handlers', (t) => {
+  const resolve = spy();
+  const board = [0, 1, 1, 2, 2, 0, 1, 2];
+  ui.getBoardData(1, resolve, board)
+    .forEach(({ clickHandler }) =>
+      (clickHandler ? clickHandler() : undefined));
+  t.deepEqual(...resolve.args[0], [1, 1, 1, 2, 2, 0, 1, 2]);
+  t.deepEqual(...resolve.args[1], [0, 1, 1, 2, 2, 1, 1, 2]);
+  t.is(resolve.callCount, 2);
 });
