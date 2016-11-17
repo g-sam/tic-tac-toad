@@ -1,4 +1,5 @@
 import * as fromBoard from './board';
+import { getBestMove } from './ai';
 
 export { getEmptyBoard } from './board';
 
@@ -11,7 +12,7 @@ export const getToken = (player) => {
 export const getBoardTokens = board =>
   board.map(player => ({ text: getToken(player) }));
 
-export const chooseGameIdx = (board, player) => idx => ({
+export const nextBoard = (board, player) => idx => ({
   board: fromBoard.movePlayerToIndex(board, player)(idx),
   player: fromBoard.switchPlayer(player),
 });
@@ -23,12 +24,18 @@ export const bindBoard = (boardTokens, resolve, getArg) =>
       clickHandler: resolve.bind(null, getArg(idx)),
     }) : token));
 
-export const getBoardData = (player, resolve, board) =>
-  bindBoard(
-    getBoardTokens(board),
-    resolve,
-    chooseGameIdx(board, player),
-  );
+export const getBoardData = (type, resolve, { player, board }) => {
+  if (type === 'human') {
+    return bindBoard(
+      getBoardTokens(board),
+      resolve,
+      nextBoard(board, player),
+    );
+  }
+  const computerMove = getBestMove(board, player);
+  resolve(nextBoard(board, player)(computerMove));
+  return getBoardTokens(board);
+};
 
 export const getOptionsFor = (type) => {
   if (type === 'game') {

@@ -16,7 +16,7 @@ const config = {
       include: path.join(__dirname, 'src'),
       loader: 'babel-loader',
       query: {
-        presets: ['latest'],
+        presets: ['latest', 'stage-2'],
       },
     }],
   },

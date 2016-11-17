@@ -34,10 +34,13 @@ test('constructs an argument for binding that merges new options with previous',
   t.deepEqual(addSecondOption(2), { first: 1, second: 2 });
 });
 
-test('gets board tokens with bound click handlers', (t) => {
+test("gets board tokens with bound click handlers if it is human's turn", (t) => {
   const resolve = spy();
-  const board = [0, 1, 1, 2, 2, 0, 1, 2];
-  ui.getBoardData(1, resolve, board)
+  const game = {
+    board: [0, 1, 1, 2, 2, 0, 1, 2],
+    player: 1,
+  };
+  ui.getBoardData('human', resolve, game)
     .forEach(({ clickHandler }) =>
       (clickHandler ? clickHandler() : undefined));
   t.deepEqual(...resolve.args[0], {
@@ -49,4 +52,17 @@ test('gets board tokens with bound click handlers', (t) => {
     player: 2,
   });
   t.is(resolve.callCount, 2);
+});
+
+test("calls resolve immediately and gets board tokens without click handlers if it is computer's turn", (t) => {
+  const resolve = spy();
+  const game = {
+    board: [0, 1, 1, 2, 2, 0, 1, 2],
+    player: 1,
+  };
+  t.false(ui.getBoardData('computer', resolve, game).some(el => el.clickHandler));
+  t.true(resolve.calledWith({
+    board: [1, 1, 1, 2, 2, 0, 1, 2],
+    player: 2,
+  }));
 });

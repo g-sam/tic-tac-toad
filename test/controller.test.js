@@ -61,7 +61,7 @@ test('the promise returned from the options reducer resolves with player 0 when 
   );
 });
 
-test.cb('if game is 1 the promise waits for user input', (t) => {
+test.cb('if game is 1 the promise does not resolve without user input', (t) => {
   const reducer = t.context.controller.getOptions('player');
   setTimeout(() => {
     t.pass();
@@ -79,37 +79,39 @@ test('getAllOptions passes default options down to getOptionsData', async (t) =>
 });
 
 test('human goes first if correct option selected', async (t) => {
-  const humanTurn = stub(t.context.controller, 'humanTurn');
+  const takeTurn = spy(t.context.controller, 'takeTurn');
   stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 0, player: 0 }));
+  stub(t.context.controller, 'startGame');
   await t.context.controller.execute();
-  t.true(humanTurn.calledOnce);
+  t.true(takeTurn.calledWith('human'));
 });
 
-test('human does NOT go first when computer selected', async (t) => {
-  const humanTurn = stub(t.context.controller, 'humanTurn');
+test('computer goes first when correct option selected', async (t) => {
+  const takeTurn = spy(t.context.controller, 'takeTurn');
   stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 1, player: 1 }));
+  stub(t.context.controller, 'startGame');
   await t.context.controller.execute();
-  t.false(humanTurn.called);
+  t.true(takeTurn.calledWith('computer'));
 });
 
-test('humanTurn calls ui.getBoardData with correct arguments', (t) => {
+test('turn reducer calls ui.getBoardData with correct arguments', (t) => {
   const getBoardData = spy(ui, 'getBoardData');
   const game = {
     board: [0, 1, 0, 0, 0, 0, 0, 0, 0],
     player: 1,
   };
-  t.context.controller.humanTurn(game);
-  t.is(getBoardData.args[0][0], 1);
+  t.context.controller.takeTurn('human')(game);
+  t.is(getBoardData.args[0][0], 'human');
   t.is(typeof getBoardData.args[0][1], 'function');
-  t.deepEqual(getBoardData.args[0][2], [0, 1, 0, 0, 0, 0, 0, 0, 0]);
+  t.deepEqual(getBoardData.args[0][2], game);
 });
 
-test('humanTurn calls dom.renderBoard and returns promise', (t) => {
+test('turn reducer calls dom.renderBoard and returns promise', (t) => {
   const game = {
     board: [0, 1, 0, 0, 0, 0, 0, 0, 0],
     player: 1,
   };
-  const actual = t.context.controller.humanTurn(game);
+  const actual = t.context.controller.takeTurn('human')(game);
   t.truthy(actual.then);
   t.true(t.context.dom.renderBoard.calledOnce);
 });
