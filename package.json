@@ -9,13 +9,19 @@
     "tdd": "nyc ava --verbose --watch --source ./src/**/*.js & webpack -d --watch & wait",
     "lint": "eslint .",
     "precommit": "npm run lint && npm t && npm run coverage",
-    "coverage": "nyc check-coverage --lines 95 --functions 95 --branches 95"
+    "coverage": "nyc check-coverage --lines 95 --functions 95 --branches 95",
+    "report": "nyc report --reporter=html" 
   },
   "babel": {
     "presets": [
       "latest",
       "stage-3"
-    ]
+    ],
+    "env": { 
+      "development": {
+        "sourceMaps": "inline"
+      }
+    }
   },
   "ava": {
     "require": [

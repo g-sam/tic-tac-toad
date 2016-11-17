@@ -45,7 +45,10 @@ export const getOptionsFor = (type) => {
       ],
     };
   }
-  return {};
+  return {
+    title: '',
+    options: [],
+  };
 };
 
 export const getResolveArg = (type, oldOptions) => idx => ({

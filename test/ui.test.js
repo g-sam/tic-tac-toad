@@ -20,12 +20,12 @@ test('gets game type options with bound click handlers', (t) => {
 
 test('gets either player or game options', (t) => {
   const has = Object.prototype.hasOwnProperty;
-  ['game', 'player']
+  ['game', 'player', undefined]
     .map(ui.getOptionsFor)
     .forEach((optionData) => {
       t.true(has.call(optionData, 'title'));
       t.true(has.call(optionData, 'options'));
-      optionData.options.map(option => t.true(has.call(option, 'text')));
+      optionData.options.forEach(option => t.true(has.call(option, 'text')));
     });
 });
 

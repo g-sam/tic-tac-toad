@@ -1,7 +1,8 @@
 import test from 'ava';
-import { createStubInstance, stub } from 'sinon';
+import { createStubInstance, stub, spy } from 'sinon';
 import Controller from '../src/controller';
 import DOMRenderer from '../src/dom';
+import * as ui from '../src/ui';
 
 test.beforeEach((t) => {
   const dom = createStubInstance(DOMRenderer);
@@ -16,15 +17,31 @@ test('execute method calls dom.renderBoard', (t) => {
   t.true(t.context.dom.renderBoard.calledOnce);
 });
 
-test('getOptions returns an options reducer that calls dom.renderOptions and returns a promise', (t) => {
-  const actual = t.context.controller.getOptions('game')({});
-  t.truthy(actual.then);
+test('getOptions returns an options reducer that calls dom.renderOptions and returns a promise when game is undefined or 1', (t) => {
+  const gameUndefined = t.context.controller.getOptions('game')({});
+  t.truthy(gameUndefined.then);
   t.true(t.context.dom.renderOptions.calledOnce);
+  const game1 = t.context.controller.getOptions('player')({ game: 1 });
+  t.truthy(game1.then);
+  t.true(t.context.dom.renderOptions.calledTwice);
 });
 
-test('selecting game 0 or 1 returns promise and skips rendering of player options', (t) => {
-  const actual = t.context.controller.getOptions('player')({ game: 0 });
-  t.truthy(actual.then);
+test('the options reducer calls ui.getOptionsData with correct arguments', (t) => {
+  const getOptionsData = spy(ui, 'getOptionsData');
+  const reducer = t.context.controller.getOptions('player');
+  reducer({ game: 1 });
+  t.is(getOptionsData.args[0][0], 'player');
+  t.is(typeof getOptionsData.args[0][1], 'function');
+  t.deepEqual(getOptionsData.args[0][2], { game: 1 });
+});
+
+test('the options reducer returns promise and skips rendering of player options when game is 0 or 2', (t) => {
+  const reducer = t.context.controller.getOptions('player');
+  const game0 = reducer({ game: 0 });
+  t.truthy(game0.then);
+  t.true(t.context.dom.renderOptions.notCalled);
+  const game2 = reducer({ game: 2 });
+  t.truthy(game2.then);
   t.true(t.context.dom.renderOptions.notCalled);
 });
 
@@ -56,6 +73,11 @@ test.cb('if game is 1 the promise waits for user input', (t) => {
   });
 });
 
+test('getAllOptions passes default options down to getOptionsData', async (t) => {
+  const actual = await t.context.controller.getAllOptions({ game: 0 });
+  t.deepEqual(actual, { game: 0, player: 0 });
+});
+
 test('human goes first if correct option selected', async (t) => {
   const humanTurn = stub(t.context.controller, 'humanTurn');
   stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 0, player: 0 }));
@@ -68,6 +90,14 @@ test('human does NOT go first when computer selected', async (t) => {
   stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 1, player: 1 }));
   await t.context.controller.execute();
   t.false(humanTurn.called);
+});
+
+test('humanTurn calls ui.getBoardData with correct arguments', (t) => {
+  const getBoardData = spy(ui, 'getBoardData');
+  t.context.controller.humanTurn([0, 1, 0, 0, 0, 0, 0, 0, 0]);
+  t.is(getBoardData.args[0][0], 1);
+  t.is(typeof getBoardData.args[0][1], 'function');
+  t.deepEqual(getBoardData.args[0][2], [0, 1, 0, 0, 0, 0, 0, 0, 0]);
 });
 
 test('humanTurn calls dom.renderBoard and returns promise', (t) => {
