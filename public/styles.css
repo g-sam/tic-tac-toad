@@ -21,6 +21,16 @@ table, td {
 tr {
   line-height: 100px;
   height: 100px;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+button {
+  padding: 4px 4px 4px 4px;
+  margin: 0px 4px 0px 4px;
 }
 
 .row {
@@ -28,7 +38,12 @@ tr {
   padding: 20px 0px 20px 0px;
 }
 
-button {
-  padding: 4px 4px 4px 4px;
-  margin: 0px 4px 0px 4px;
+tr .clickable {
+  cursor: pointer;
+  pointer-events: auto;
 }
+
+tr .clickable:hover {
+  background-color: whitesmoke;
+}
+
