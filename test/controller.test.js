@@ -94,14 +94,22 @@ test('human does NOT go first when computer selected', async (t) => {
 
 test('humanTurn calls ui.getBoardData with correct arguments', (t) => {
   const getBoardData = spy(ui, 'getBoardData');
-  t.context.controller.humanTurn([0, 1, 0, 0, 0, 0, 0, 0, 0]);
+  const game = {
+    board: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    player: 1,
+  };
+  t.context.controller.humanTurn(game);
   t.is(getBoardData.args[0][0], 1);
   t.is(typeof getBoardData.args[0][1], 'function');
   t.deepEqual(getBoardData.args[0][2], [0, 1, 0, 0, 0, 0, 0, 0, 0]);
 });
 
 test('humanTurn calls dom.renderBoard and returns promise', (t) => {
-  const actual = t.context.controller.humanTurn();
+  const game = {
+    board: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    player: 1,
+  };
+  const actual = t.context.controller.humanTurn(game);
   t.truthy(actual.then);
   t.true(t.context.dom.renderBoard.calledOnce);
 });

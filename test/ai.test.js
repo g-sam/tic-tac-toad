@@ -50,11 +50,6 @@ test('scores moves looking one move ahead', (t) => {
   ], 1), [0]);
 });
 
-test('switches player', (t) => {
-  t.is(ai.switchPlayer(1), 2);
-  t.is(ai.switchPlayer(2), 1);
-});
-
 test('scores moves looking ahead to endgame', (t) => {
   t.deepEqual(ai.scoreNextMoves([
     1, 0, 1,

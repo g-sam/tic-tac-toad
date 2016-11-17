@@ -3,6 +3,9 @@ import { chain } from 'ramda';
 export const getEmptyBoard = () =>
   Array(9).fill(0);
 
+export const switchPlayer = player =>
+  (player === 1 ? 2 : 1);
+
 export const movePlayerToIndex = (board, player) => idx => [
   ...board.slice(0, idx),
   player,

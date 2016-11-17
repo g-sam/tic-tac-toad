@@ -40,7 +40,13 @@ test('gets board tokens with bound click handlers', (t) => {
   ui.getBoardData(1, resolve, board)
     .forEach(({ clickHandler }) =>
       (clickHandler ? clickHandler() : undefined));
-  t.deepEqual(...resolve.args[0], [1, 1, 1, 2, 2, 0, 1, 2]);
-  t.deepEqual(...resolve.args[1], [0, 1, 1, 2, 2, 1, 1, 2]);
+  t.deepEqual(...resolve.args[0], {
+    board: [1, 1, 1, 2, 2, 0, 1, 2],
+    player: 2,
+  });
+  t.deepEqual(...resolve.args[1], {
+    board: [0, 1, 1, 2, 2, 1, 1, 2],
+    player: 2,
+  });
   t.is(resolve.callCount, 2);
 });

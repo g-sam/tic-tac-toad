@@ -12,6 +12,11 @@ test('generates empty board', (t) => {
   );
 });
 
+test('switches player', (t) => {
+  t.is(board.switchPlayer(1), 2);
+  t.is(board.switchPlayer(2), 1);
+});
+
 test('move player to index', (t) => {
   const newBoard = board.movePlayerToIndex(board.getEmptyBoard(), 1)(3);
   t.deepEqual(

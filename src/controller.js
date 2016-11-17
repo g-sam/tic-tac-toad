@@ -5,16 +5,19 @@ export default class Controller {
     this.dom = renderer;
   }
   execute() {
-    this.dom.renderBoard(ui.getBoardTokens(ui.getEmptyBoard()));
+    const board = ui.getEmptyBoard();
+    this.dom.renderBoard(ui.getBoardTokens(board));
     return this.getAllOptions()
       .then(options => (
-        options.player === 0 ? this.humanTurn() : undefined
+        options.player === 0 ? this.humanTurn({
+          board,
+          player: 1,
+        }) : undefined
       ));
   }
-  humanTurn(board = ui.getEmptyBoard()) {
-    const player = 1;
+  humanTurn(game) {
     return new Promise(resolve =>
-      this.dom.renderBoard(ui.getBoardData(player, resolve, board)));
+      this.dom.renderBoard(ui.getBoardData(game.player, resolve, game.board)));
   }
   getAllOptions(defaults = {}) {
     return Promise.resolve(defaults)
