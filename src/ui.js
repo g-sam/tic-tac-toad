@@ -1,12 +1,14 @@
 import * as fromBoard from './board';
 
+export { getEmptyBoard } from './board';
+
 export const getToken = (player) => {
   if (player === 1) return 'x';
   if (player === 2) return 'o';
   return '';
 };
 
-export const getBoardTokens = (board = fromBoard.getEmptyBoard()) =>
+export const getBoardTokens = board =>
   board.map(player => ({ text: getToken(player) }));
 
 export const bindBoard = (boardTokens, resolve, getArg) =>

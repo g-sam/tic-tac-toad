@@ -3,7 +3,7 @@ import jquery from 'jquery';
 import { jsdom } from 'jsdom';
 import { spy } from 'sinon';
 import { readFileSync } from 'fs';
-import DOMRenderer from '../src/dom-render';
+import DOMRenderer from '../src/dom';
 
 const html = readFileSync('../public/index.html', 'utf8');
 

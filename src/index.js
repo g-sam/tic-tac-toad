@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import DOMRenderer from './dom-render';
+import DOMRenderer from './dom';
 import Controller from './controller';
 
 const dom = new DOMRenderer($);
