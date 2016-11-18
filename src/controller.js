@@ -10,13 +10,25 @@ export default class Controller {
     player: 1,
   };
 
-  setTurnSequence = (options) => {
-    if (options.player === 0) return this.takeTurn('human');
-    return this.takeTurn('computer');
+  getNextTurn = (firstPlayer, secondPlayer) => game => (
+    game.player === 1 ?
+    this.takeTurn(firstPlayer)(game) :
+    this.takeTurn(secondPlayer)(game)
+  );
+
+  setTurnSequence = ({ player, game }) => {
+    if (game === 0) {
+      return this.getNextTurn('human', 'human');
+    } else if (game === 1 && player === 0) {
+      return this.getNextTurn('human', 'computer');
+    } else if (game === 1 && player === 1) {
+      return this.getNextTurn('computer', 'human');
+    }
+    return this.getNextTurn('computer', 'computer');
   }
 
-  startGame = firstTurn =>
-    firstTurn(this.initialGame);
+  startGame = nextTurn =>
+    nextTurn(this.initialGame).then(nextTurn);
 
   takeTurn = type => game =>
       new Promise(resolve =>

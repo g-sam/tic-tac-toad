@@ -6,7 +6,12 @@ import * as ui from '../src/ui';
 
 test.beforeEach((t) => {
   const dom = createStubInstance(DOMRenderer);
+  const testGame = {
+    board: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    player: 1,
+  };
   t.context = { // eslint-disable-line no-param-reassign
+    testGame,
     dom,
     controller: new Controller(dom),
   };
@@ -79,39 +84,49 @@ test('getAllOptions passes default options down to getOptionsData', async (t) =>
 });
 
 test('human goes first if correct option selected', async (t) => {
-  const takeTurn = spy(t.context.controller, 'takeTurn');
+  const takeTurn = stub(t.context.controller, 'takeTurn').returns(() => Promise.resolve(t.context.testGame));
   stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 0, player: 0 }));
-  stub(t.context.controller, 'startGame');
   await t.context.controller.execute();
-  t.true(takeTurn.calledWith('human'));
+  t.true(takeTurn.firstCall.calledWith('human'));
 });
 
 test('computer goes first when correct option selected', async (t) => {
-  const takeTurn = spy(t.context.controller, 'takeTurn');
+  const takeTurn = stub(t.context.controller, 'takeTurn').returns(() => Promise.resolve(t.context.testGame));
   stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 1, player: 1 }));
-  stub(t.context.controller, 'startGame');
   await t.context.controller.execute();
-  t.true(takeTurn.calledWith('computer'));
+  t.true(takeTurn.firstCall.calledWith('computer'));
+});
+
+test('setTurnSequence calls getNextTurn with correct arguments', (t) => {
+  const nextTurn = stub(t.context.controller, 'getNextTurn');
+  t.context.controller.setTurnSequence({ game: 0 });
+  t.deepEqual(nextTurn.args[0], ['human', 'human']);
+  t.context.controller.setTurnSequence({ game: 1, player: 0 });
+  t.deepEqual(nextTurn.args[1], ['human', 'computer']);
+  t.context.controller.setTurnSequence({ game: 1, player: 1 });
+  t.deepEqual(nextTurn.args[2], ['computer', 'human']);
+  t.context.controller.setTurnSequence({ game: 2 });
+  t.deepEqual(nextTurn.args[3], ['computer', 'computer']);
+});
+
+test('getNextTurn calls takeTurn with the next player', (t) => {
+  const takeTurn = stub(t.context.controller, 'takeTurn').returns(() => null);
+  t.context.controller.getNextTurn('first', 'second')({ player: 1 });
+  t.deepEqual(takeTurn.args[0], ['first']);
+  t.context.controller.getNextTurn('first', 'second')({ player: 2 });
+  t.deepEqual(takeTurn.args[1], ['second']);
 });
 
 test('turn reducer calls ui.getBoardData with correct arguments', (t) => {
   const getBoardData = spy(ui, 'getBoardData');
-  const game = {
-    board: [0, 1, 0, 0, 0, 0, 0, 0, 0],
-    player: 1,
-  };
-  t.context.controller.takeTurn('human')(game);
+  t.context.controller.takeTurn('human')(t.context.testGame);
   t.is(getBoardData.args[0][0], 'human');
   t.is(typeof getBoardData.args[0][1], 'function');
-  t.deepEqual(getBoardData.args[0][2], game);
+  t.deepEqual(getBoardData.args[0][2], t.context.testGame);
 });
 
 test('turn reducer calls dom.renderBoard and returns promise', (t) => {
-  const game = {
-    board: [0, 1, 0, 0, 0, 0, 0, 0, 0],
-    player: 1,
-  };
-  const actual = t.context.controller.takeTurn('human')(game);
+  const actual = t.context.controller.takeTurn('human')(t.context.testGame);
   t.truthy(actual.then);
   t.true(t.context.dom.renderBoard.calledOnce);
 });
