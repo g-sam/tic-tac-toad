@@ -22,12 +22,12 @@ test.beforeEach((t) => {
   };
 });
 
-test('execute method calls dom.renderBoard', (t) => {
+test('execute method calls dom.renderBoard', async (t) => {
   stub(t.context.controller, 'getAllOptions');
   stub(t.context.controller, 'playGame');
   stub(t.context.controller, 'endGame');
-  stub(t.context.controller, 'getOptions');
-  t.context.controller.execute();
+  stub(t.context.controller, 'getOptions').returns(() => { throw new Error('escape infinite loop'); });
+  await t.context.controller.execute().catch(() => null);
   t.true(t.context.dom.renderBoard.calledOnce);
 });
 
@@ -164,8 +164,11 @@ test('execute calls getAllOptions, playGame, endGame and getOptions', async (t) 
   const getAllOptions = stub(t.context.controller, 'getAllOptions').returns(1);
   const playGame = stub(t.context.controller, 'playGame').returns(2);
   const endGame = stub(t.context.controller, 'endGame').returns(3);
-  const getOption = stub(t.context.controller, 'getOptions').returns(arg => t.is(arg, 3));
-  await t.context.controller.execute();
+  const getOption = stub(t.context.controller, 'getOptions').returns((arg) => {
+    t.is(arg, 3);
+    throw new Error('escape infinite loop');
+  });
+  await t.context.controller.execute().catch(() => null);
   t.true(getAllOptions.called);
   t.true(playGame.calledWith(1));
   t.true(endGame.calledWith(2));

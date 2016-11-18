@@ -70,6 +70,7 @@ export default class Controller {
       .then(this.getAllOptions)
       .then(this.playGame)
       .then(this.endGame)
-      .then(this.getOptions('restart'));
+      .then(this.getOptions('restart'))
+      .then(this.execute);
   }
 }
