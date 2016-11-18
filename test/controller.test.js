@@ -12,7 +12,7 @@ test.beforeEach((t) => {
   };
   const winningGame = {
     board: [1, 1, 1, 0, 0, 0, 0, 0, 0],
-    player: 2
+    player: 2,
   };
   t.context = { // eslint-disable-line no-param-reassign
     testGame,
@@ -25,6 +25,8 @@ test.beforeEach((t) => {
 test('execute method calls dom.renderBoard', (t) => {
   stub(t.context.controller, 'getAllOptions');
   stub(t.context.controller, 'playGame');
+  stub(t.context.controller, 'endGame');
+  stub(t.context.controller, 'getOptions');
   t.context.controller.execute();
   t.true(t.context.dom.renderBoard.calledOnce);
 });
@@ -92,15 +94,13 @@ test('getAllOptions passes default options down to getOptionsData', async (t) =>
 
 test('human goes first if correct option selected', async (t) => {
   const takeTurn = stub(t.context.controller, 'takeTurn').returns(() => Promise.resolve(t.context.winningGame));
-  stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 0, player: 0 }));
-  await t.context.controller.execute();
+  await t.context.controller.playGame({ game: 0, player: 0 });
   t.true(takeTurn.firstCall.calledWith('human'));
 });
 
 test('computer goes first when correct option selected', async (t) => {
   const takeTurn = stub(t.context.controller, 'takeTurn').returns(() => Promise.resolve(t.context.winningGame));
-  stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 1, player: 1 }));
-  await t.context.controller.execute();
+  await t.context.controller.playGame({ game: 1, player: 1 });
   t.true(takeTurn.firstCall.calledWith('computer'));
 });
 
@@ -153,3 +153,21 @@ test('turn reducer calls dom.renderBoard and returns promise', (t) => {
   t.true(t.context.dom.renderBoard.calledOnce);
 });
 
+test('endGame calls dom.renderBoard with result of ui.getBoardTokens and returns its argument', (t) => {
+  stub(ui, 'getBoardTokens').returns('test2');
+  const actual = t.context.controller.endGame('test1');
+  t.is(...t.context.dom.renderBoard.args[0], 'test2');
+  t.is(actual, 'test1');
+});
+
+test('execute calls getAllOptions, playGame, endGame and getOptions', async (t) => {
+  const getAllOptions = stub(t.context.controller, 'getAllOptions').returns(1);
+  const playGame = stub(t.context.controller, 'playGame').returns(2);
+  const endGame = stub(t.context.controller, 'endGame').returns(3);
+  const getOption = stub(t.context.controller, 'getOptions').returns(arg => t.is(arg, 3));
+  await t.context.controller.execute();
+  t.true(getAllOptions.called);
+  t.true(playGame.calledWith(1));
+  t.true(endGame.calledWith(2));
+  t.true(getOption.calledWith('restart'));
+});

@@ -32,6 +32,11 @@ export default class Controller {
     nextTurn(game).then(this.chainTurns(nextTurn))
   );
 
+  endGame = (game) => {
+    this.dom.renderBoard(ui.getBoardTokens(game.board));
+    return game;
+  }
+
   playGame = (options) => {
     const nextTurn = this.setTurnSequence(options);
     const turnSequence = this.chainTurns(nextTurn);
@@ -59,10 +64,12 @@ export default class Controller {
         this.dom.renderOptions(ui.getOptionsData(type, resolve, options)));
   };
 
-  execute() {
+  execute = () => {
     this.dom.renderBoard(ui.getBoardTokens(this.initialGame.board));
     return Promise.resolve()
       .then(this.getAllOptions)
-      .then(this.playGame);
+      .then(this.playGame)
+      .then(this.endGame)
+      .then(this.getOptions('restart'));
   }
 }

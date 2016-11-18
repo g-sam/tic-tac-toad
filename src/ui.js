@@ -40,7 +40,7 @@ export const getBoardData = (type, resolve, { player, board }) => {
 export const prevTurnIsWinner = ({ player, board }) =>
   fromBoard.isWinner(board, fromBoard.switchPlayer(player));
 
-export const getOptionsFor = (type) => {
+export const getOptionsFor = (type, oldOptions) => {
   if (type === 'game') {
     return {
       title: 'Select game type',
@@ -50,13 +50,19 @@ export const getOptionsFor = (type) => {
         { text: 'Computer vs. computer' },
       ],
     };
-  }
-  if (type === 'player') {
+  } else if (type === 'player') {
     return {
       title: 'Choose who goes first',
       options: [
         { text: 'Me!!!' },
         { text: 'Computer' },
+      ],
+    };
+  } else if (type === 'restart') {
+    return {
+      title: `${getToken(fromBoard.switchPlayer(oldOptions.player))} wins!`,
+      options: [
+        { text: 'Play again' },
       ],
     };
   }
@@ -82,7 +88,7 @@ export const bindOptions = (optionObj, resolve, getArg) => ({
 
 export const getOptionsData = (type, resolve, oldOptions) =>
   bindOptions(
-    getOptionsFor(type),
+    getOptionsFor(type, oldOptions),
     resolve,
     getResolveArg(type, oldOptions),
   );

@@ -66,3 +66,11 @@ test("calls resolve immediately and gets board tokens without click handlers if 
     player: 2,
   }));
 });
+
+test('getOptionsFor "restart" returns title with winning player', (t) => {
+  const actual = ui.getOptionsFor('restart', {
+    board: [1, 1, 1, 2, 2, 0, 1, 2],
+    player: 2,
+  });
+  t.is(actual.title, 'x wins!');
+});
