@@ -37,6 +37,9 @@ export const getBoardData = (type, resolve, { player, board }) => {
   return getBoardTokens(board);
 };
 
+export const prevTurnIsWinner = ({ player, board }) =>
+  fromBoard.isWinner(board, fromBoard.switchPlayer(player));
+
 export const getOptionsFor = (type) => {
   if (type === 'game') {
     return {

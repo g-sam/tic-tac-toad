@@ -27,8 +27,17 @@ export default class Controller {
     return this.getNextTurn('computer', 'computer');
   }
 
-  startGame = nextTurn =>
-    nextTurn(this.initialGame).then(nextTurn);
+  chainTurns = nextTurn => game => (
+    ui.prevTurnIsWinner(game) ? Promise.resolve(game) :
+    nextTurn(game).then(this.chainTurns(nextTurn))
+  );
+
+  playGame = (options) => {
+    const nextTurn = this.setTurnSequence(options);
+    const turnSequence = this.chainTurns(nextTurn);
+    return Promise.resolve(this.initialGame)
+      .then(turnSequence);
+  }
 
   takeTurn = type => game =>
       new Promise(resolve =>
@@ -54,7 +63,6 @@ export default class Controller {
     this.dom.renderBoard(ui.getBoardTokens(this.initialGame.board));
     return Promise.resolve()
       .then(this.getAllOptions)
-      .then(this.setTurnSequence)
-      .then(this.startGame);
+      .then(this.playGame);
   }
 }

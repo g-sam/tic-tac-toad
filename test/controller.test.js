@@ -10,14 +10,21 @@ test.beforeEach((t) => {
     board: [0, 1, 0, 0, 0, 0, 0, 0, 0],
     player: 1,
   };
+  const winningGame = {
+    board: [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    player: 2
+  };
   t.context = { // eslint-disable-line no-param-reassign
     testGame,
+    winningGame,
     dom,
     controller: new Controller(dom),
   };
 });
 
 test('execute method calls dom.renderBoard', (t) => {
+  stub(t.context.controller, 'getAllOptions');
+  stub(t.context.controller, 'playGame');
   t.context.controller.execute();
   t.true(t.context.dom.renderBoard.calledOnce);
 });
@@ -84,14 +91,14 @@ test('getAllOptions passes default options down to getOptionsData', async (t) =>
 });
 
 test('human goes first if correct option selected', async (t) => {
-  const takeTurn = stub(t.context.controller, 'takeTurn').returns(() => Promise.resolve(t.context.testGame));
+  const takeTurn = stub(t.context.controller, 'takeTurn').returns(() => Promise.resolve(t.context.winningGame));
   stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 0, player: 0 }));
   await t.context.controller.execute();
   t.true(takeTurn.firstCall.calledWith('human'));
 });
 
 test('computer goes first when correct option selected', async (t) => {
-  const takeTurn = stub(t.context.controller, 'takeTurn').returns(() => Promise.resolve(t.context.testGame));
+  const takeTurn = stub(t.context.controller, 'takeTurn').returns(() => Promise.resolve(t.context.winningGame));
   stub(t.context.controller, 'getAllOptions').returns(Promise.resolve({ game: 1, player: 1 }));
   await t.context.controller.execute();
   t.true(takeTurn.firstCall.calledWith('computer'));
@@ -115,6 +122,21 @@ test('getNextTurn calls takeTurn with the next player', (t) => {
   t.deepEqual(takeTurn.args[0], ['first']);
   t.context.controller.getNextTurn('first', 'second')({ player: 2 });
   t.deepEqual(takeTurn.args[1], ['second']);
+});
+
+test('chainTurns returns resolved promise when game has been won', async (t) => {
+  const winning = { board: [1, 1, 1, 0, 0, 0, 0, 0, 0], player: 2 };
+  const actual = await t.context.controller.chainTurns(null)(winning);
+  t.deepEqual(actual, winning);
+});
+
+test('otherwise chainTurns returns a function that calls chainTurns with its initial argument', async (t) => {
+  const winning = { board: [1, 1, 1, 0, 0, 0, 0, 0, 0], player: 2 };
+  const notWinning = { board: [0, 1, 1, 0, 0, 0, 0, 0, 0], player: 1 };
+  const chainTurns = spy(t.context.controller, 'chainTurns');
+  const nextTurn = () => Promise.resolve(winning);
+  await chainTurns(nextTurn)(notWinning);
+  t.true(chainTurns.secondCall.calledWith(...chainTurns.firstCall.args));
 });
 
 test('turn reducer calls ui.getBoardData with correct arguments', (t) => {
