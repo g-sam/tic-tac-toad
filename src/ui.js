@@ -32,13 +32,15 @@ export const getBoardData = (type, resolve, { player, board }) => {
       nextBoard(board, player),
     );
   }
-  const computerMove = getBestMove(board, player);
-  resolve(nextBoard(board, player)(computerMove));
+  setTimeout(() => {
+    const computerMove = getBestMove(board, player);
+    resolve(nextBoard(board, player)(computerMove));
+  }, 0);
   return getBoardTokens(board);
 };
 
-export const prevTurnIsWinner = ({ player, board }) =>
-  fromBoard.isWinner(board, fromBoard.switchPlayer(player));
+export const isGameOver = ({ player, board }) =>
+  fromBoard.isGameOver(board, fromBoard.switchPlayer(player));
 
 export const getOptionsFor = (type, oldOptions) => {
   if (type === 'game') {

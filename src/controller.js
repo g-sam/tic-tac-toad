@@ -28,7 +28,7 @@ export default class Controller {
   }
 
   chainTurns = nextTurn => game => (
-    ui.prevTurnIsWinner(game) ? Promise.resolve(game) :
+    ui.isGameOver(game) ? Promise.resolve(game) :
     nextTurn(game).then(this.chainTurns(nextTurn))
   );
 

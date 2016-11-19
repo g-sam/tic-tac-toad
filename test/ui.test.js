@@ -66,17 +66,20 @@ test("gets board tokens with bound click handlers if it is human's turn", (t) =>
   t.is(resolve.callCount, 2);
 });
 
-test("calls resolve immediately and gets board tokens without click handlers if it is computer's turn", (t) => {
+test.cb("calls resolve after setTimeout and gets board tokens without click handlers if it is computer's turn", (t) => {
   const resolve = spy();
   const game = {
     board: [0, 1, 1, 2, 2, 0, 1, 2],
     player: 1,
   };
   t.false(ui.getBoardData('computer', resolve, game).some(el => el.clickHandler));
-  t.true(resolve.calledWith({
-    board: [1, 1, 1, 2, 2, 0, 1, 2],
-    player: 2,
-  }));
+  setTimeout(() => {
+    t.true(resolve.calledWith({
+      board: [1, 1, 1, 2, 2, 0, 1, 2],
+      player: 2,
+    }));
+    t.end();
+  }, 100);
 });
 
 test('getOptionsFor "restart" returns title with winning player', (t) => {
