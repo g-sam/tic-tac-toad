@@ -49,33 +49,37 @@ test('constructs an argument for binding that merges new options with previous',
 test("gets board tokens with bound click handlers if it is human's turn", (t) => {
   const resolve = spy();
   const game = {
-    board: [0, 1, 1, 2, 2, 0, 1, 2],
+    board: [0, 1, 1, 2, 2, 0, 1, 2, 0],
     player: 1,
   };
   ui.getBoardData('human', resolve, game)
     .forEach(({ clickHandler }) =>
       (clickHandler ? clickHandler() : undefined));
   t.deepEqual(...resolve.args[0], {
-    board: [1, 1, 1, 2, 2, 0, 1, 2],
+    board: [1, 1, 1, 2, 2, 0, 1, 2, 0],
     player: 2,
   });
   t.deepEqual(...resolve.args[1], {
-    board: [0, 1, 1, 2, 2, 1, 1, 2],
+    board: [0, 1, 1, 2, 2, 1, 1, 2, 0],
     player: 2,
   });
-  t.is(resolve.callCount, 2);
+  t.deepEqual(...resolve.args[2], {
+    board: [0, 1, 1, 2, 2, 0, 1, 2, 1],
+    player: 2,
+  });
+  t.is(resolve.callCount, 3);
 });
 
 test.cb("calls resolve after setTimeout and gets board tokens without click handlers if it is computer's turn", (t) => {
   const resolve = spy();
   const game = {
-    board: [0, 1, 1, 2, 2, 0, 1, 2],
+    board: [0, 1, 1, 2, 2, 0, 1, 2, 0],
     player: 1,
   };
   t.false(ui.getBoardData('computer', resolve, game).some(el => el.clickHandler));
   setTimeout(() => {
     t.true(resolve.calledWith({
-      board: [1, 1, 1, 2, 2, 0, 1, 2],
+      board: [1, 1, 1, 2, 2, 0, 1, 2, 0],
       player: 2,
     }));
     t.end();
@@ -83,9 +87,39 @@ test.cb("calls resolve after setTimeout and gets board tokens without click hand
 });
 
 test('getOptionsFor "restart" returns title with winning player', (t) => {
-  const actual = ui.getOptionsFor('restart', {
-    board: [1, 1, 1, 2, 2, 0, 1, 2],
+  const first = ui.getOptionsFor('restart', {
+    winner: 1,
+  });
+  t.is(first.title, 'x wins!');
+  const second = ui.getOptionsFor('restart', {
+    winner: 2,
+  });
+  t.is(second.title, 'o wins!');
+  const draw = ui.getOptionsFor('restart', {
+    winner: 0,
+  });
+  t.is(draw.title, 'draw!');
+});
+
+test('getWinner returns new game object with winner set to winning player, 0 or undefined', (t) => {
+  const first = ui.getWinner({
+    board: [1, 1, 1, 2, 2, 0, 1, 2, 0],
     player: 2,
   });
-  t.is(actual.title, 'x wins!');
+  t.is(first.winner, 1);
+  const second = ui.getWinner({
+    board: [2, 2, 2, 1, 1, 0, 1, 2, 0],
+    player: 1,
+  });
+  t.is(second.winner, 2);
+  const unfinished = ui.getWinner({
+    board: [2, 2, 0, 1, 1, 0, 1, 2, 0],
+    player: 1,
+  });
+  t.is(unfinished.winner, undefined);
+  const draw = ui.getWinner({
+    board: [2, 2, 1, 1, 1, 2, 2, 1, 1],
+    player: 1,
+  });
+  t.is(draw.winner, 0);
 });

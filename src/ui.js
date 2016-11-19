@@ -12,10 +12,23 @@ export const getToken = (player) => {
 export const getBoardTokens = board =>
   board.map(player => ({ text: getToken(player) }));
 
+export const getWinner = ({ board, player }) => {
+  let winner;
+  const lastPlayer = fromBoard.switchPlayer(player);
+  if (fromBoard.isWinner(board, lastPlayer)) winner = lastPlayer;
+  if (fromBoard.isBoardFull(board)) winner = 0;
+  return {
+    board,
+    player,
+    winner,
+  };
+};
+
 export const nextBoard = (board, player) => idx => ({
   board: fromBoard.movePlayerToIndex(board, player)(idx),
   player: fromBoard.switchPlayer(player),
 });
+
 
 export const bindBoard = (boardTokens, resolve, getArg) =>
   boardTokens
@@ -38,9 +51,6 @@ export const getBoardData = (type, resolve, { player, board }) => {
   }, 0);
   return getBoardTokens(board);
 };
-
-export const isGameOver = ({ player, board }) =>
-  fromBoard.isGameOver(board, fromBoard.switchPlayer(player));
 
 export const getOptionsFor = (type, oldOptions) => {
   if (type === 'game') {
@@ -71,7 +81,7 @@ export const getOptionsFor = (type, oldOptions) => {
     };
   } else if (type === 'restart') {
     return {
-      title: `${getToken(fromBoard.switchPlayer(oldOptions.player))} wins!`,
+      title: `${oldOptions.winner ? `${getToken(oldOptions.winner)} wins!` : 'draw!'}`,
       options: [
         { text: 'Play again' },
       ],

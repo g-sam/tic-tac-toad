@@ -28,7 +28,7 @@ export default class Controller {
   }
 
   chainTurns = nextTurn => game => (
-    ui.isGameOver(game) ? Promise.resolve(game) :
+    typeof game.winner === 'number' ? Promise.resolve(game) :
     nextTurn(game).then(this.chainTurns(nextTurn))
   );
 
@@ -39,7 +39,8 @@ export default class Controller {
 
   playGame = (options) => {
     const nextTurn = this.setTurnSequence(options);
-    const turnSequence = this.chainTurns(nextTurn);
+    const checkedTurn = this.checkTurn(nextTurn);
+    const turnSequence = this.chainTurns(checkedTurn);
     return Promise.resolve(this.initialGame)
       .then(turnSequence);
   }
@@ -47,6 +48,9 @@ export default class Controller {
   takeTurn = type => game =>
       new Promise(resolve =>
           this.dom.renderBoard(ui.getBoardData(type, resolve, game)));
+
+  checkTurn = nextTurn => game =>
+    nextTurn(game).then(ui.getWinner);
 
   getAllOptions = (defaults = {}) =>
     Promise.resolve(defaults)
