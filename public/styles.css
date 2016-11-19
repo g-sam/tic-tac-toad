@@ -10,8 +10,9 @@ h1 {
 table {
   table-layout: fixed;
   border-collapse: collapse;
-  width: 300px;
+  width: 240px;
   margin: 0 auto;
+  font-size: x-large;
 }
 
 table, td {
@@ -19,8 +20,7 @@ table, td {
 }
 
 tr {
-  line-height: 100px;
-  height: 100px;
+  line-height: 80px;
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
@@ -36,6 +36,11 @@ button {
 .row {
   width: 100%;
   padding: 20px 0px 20px 0px;
+}
+
+td div  {
+  overflow: hidden;
+  height: 80px;
 }
 
 tr .clickable {

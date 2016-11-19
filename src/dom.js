@@ -6,7 +6,7 @@ export default class DOMRenderer {
     return `<table>
   <tbody>${boardData.map(({ text }, idx) => `\
     ${idx % 3 === 0 ? '\n   <tr>' : ''}
-    <td>${text}</td>\
+    <td><div>${text}</div></td>\
     ${idx % 3 === 2 ? '\n   </tr>' : ''}`)
     .join('')}
   </tbody>
