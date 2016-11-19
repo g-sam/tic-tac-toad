@@ -58,6 +58,15 @@ export const getOptionsFor = (type, oldOptions) => {
         { text: 'Computer' },
       ],
     };
+  } else if (type === 'ready') {
+    return {
+      title: [
+        'human vs. human',
+        'computer vs. human',
+        'computer vs. computer',
+      ][oldOptions.game],
+      options: [],
+    };
   } else if (type === 'restart') {
     return {
       title: `${getToken(fromBoard.switchPlayer(oldOptions.player))} wins!`,
@@ -86,10 +95,19 @@ export const bindOptions = (optionObj, resolve, getArg) => ({
 });
 
 
-export const getOptionsData = (type, resolve, oldOptions) =>
-  bindOptions(
+export const getOptionsData = (type, resolve, oldOptions) => {
+  if (type === 'player') {
+    if (oldOptions.game !== 1) {
+      resolve(oldOptions);
+      return getOptionsFor();
+    }
+  } else if (type === 'ready') {
+    resolve(oldOptions);
+    return getOptionsFor(type, oldOptions);
+  }
+  return bindOptions(
     getOptionsFor(type, oldOptions),
     resolve,
     getResolveArg(type, oldOptions),
   );
-
+};

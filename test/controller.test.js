@@ -49,32 +49,6 @@ test('the options reducer calls ui.getOptionsData with correct arguments', (t) =
   t.deepEqual(getOptionsData.args[0][2], { game: 1 });
 });
 
-test('the options reducer returns promise and skips rendering of player options when game is 0 or 2', (t) => {
-  const reducer = t.context.controller.getOptions('player');
-  const game0 = reducer({ game: 0 });
-  t.truthy(game0.then);
-  t.true(t.context.dom.renderOptions.notCalled);
-  const game2 = reducer({ game: 2 });
-  t.truthy(game2.then);
-  t.true(t.context.dom.renderOptions.notCalled);
-});
-
-test('the promise returned from the options reducer resolves with player 1 when when game is 2', async (t) => {
-  const reducer = t.context.controller.getOptions('player');
-  t.deepEqual(
-    await reducer({ game: 2 }),
-    { game: 2, player: 1 },
-  );
-});
-
-test('the promise returned from the options reducer resolves with player 0 when when game is 0', async (t) => {
-  const reducer = t.context.controller.getOptions('player');
-  t.deepEqual(
-    await reducer({ game: 0 }),
-    { game: 0, player: 0 },
-  );
-});
-
 test.cb('if game is 1 the promise does not resolve without user input', (t) => {
   const reducer = t.context.controller.getOptions('player');
   setTimeout(() => {
@@ -88,8 +62,11 @@ test.cb('if game is 1 the promise does not resolve without user input', (t) => {
 });
 
 test('getAllOptions passes default options down to getOptionsData', async (t) => {
-  const actual = await t.context.controller.getAllOptions({ game: 0 });
-  t.deepEqual(actual, { game: 0, player: 0 });
+  stub(t.context.controller, 'getOptions', () => (arg) => {
+    t.is(arg, 'test');
+    return arg;
+  });
+  await t.context.controller.getAllOptions('test');
 });
 
 test('human goes first if correct option selected', async (t) => {

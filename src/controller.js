@@ -51,18 +51,12 @@ export default class Controller {
   getAllOptions = (defaults = {}) =>
     Promise.resolve(defaults)
       .then(this.getOptions('game'))
-      .then(this.getOptions('player'));
+      .then(this.getOptions('player'))
+      .then(this.getOptions('ready'));
 
-  getOptions = type => (options) => {
-    if (options.game === 0 || options.game === 2) {
-      return Promise.resolve({
-        ...options,
-        player: options.game === 2 ? 1 : 0,
-      });
-    }
-    return new Promise(resolve =>
+  getOptions = type => options =>
+    new Promise(resolve =>
         this.dom.renderOptions(ui.getOptionsData(type, resolve, options)));
-  };
 
   execute = () => {
     this.dom.renderBoard(ui.getBoardTokens(this.initialGame.board));

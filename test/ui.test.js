@@ -18,15 +18,27 @@ test('gets game type options with bound click handlers', (t) => {
     });
 });
 
-test('gets either player or game options', (t) => {
+test('gets options of a given type', (t) => {
   const has = Object.prototype.hasOwnProperty;
-  ['game', 'player', undefined]
+  ['game', 'player', 'ready', 'restart', undefined]
     .map(ui.getOptionsFor)
     .forEach((optionData) => {
       t.true(has.call(optionData, 'title'));
       t.true(has.call(optionData, 'options'));
       optionData.options.forEach(option => t.true(has.call(option, 'text')));
     });
+});
+
+test('if option type is "player" when game is 0 or 2 or option type is "ready", clickhandlers are not bound and resolve is called immediately', (t) => {
+  const resolve = spy();
+  const options0 = { game: 0 };
+  const options1 = { game: 2 };
+  t.false(ui.getOptionsData('player', resolve, options0).options.some(el => el.clickHandler));
+  t.false(ui.getOptionsData('player', resolve, options1).options.some(el => el.clickHandler));
+  t.false(ui.getOptionsData('ready', resolve, options0).options.some(el => el.clickHandler));
+  t.is(...resolve.args[0], options0);
+  t.is(...resolve.args[1], options1);
+  t.is(...resolve.args[2], options0);
 });
 
 test('constructs an argument for binding that merges new options with previous', (t) => {
