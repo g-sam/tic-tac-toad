@@ -1,3 +1,4 @@
+import { stub } from 'sinon';
 import test from 'ava';
 import * as ai from '../src/ai';
 
@@ -41,7 +42,7 @@ test('scores moves looking one move ahead', (t) => {
     1, 1, 0,
     2, 1, 2,
     2, 0, 2,
-  ], 2), [100, 100]);
+  ], 2), [99, 99]);
 
   t.deepEqual(ai.scoreNextMoves([
     1, 2, 1,
@@ -55,17 +56,12 @@ test('scores moves looking ahead to endgame', (t) => {
     1, 0, 1,
     2, 1, 2,
     2, 0, 0,
-  ], 2), [-99, -99, -99]);
+  ], 2), [-98, -98, -98]);
   t.deepEqual(ai.scoreNextMoves([
     1, 0, 1,
     2, 1, 2,
     2, 0, 0,
-  ], 1), [100, 98, 100]);
-  t.deepEqual(ai.scoreNextMoves([
-    1, 0, 1,
-    2, 0, 2,
-    2, 0, 0,
-  ], 1), [100, 98, -99, -99]);
+  ], 1), [99, 97, 99]);
 });
 
 /* There follow tests for all distinct strategic situations. See https://en.wikipedia.org/wiki/Tic-tac-toe#Strategy. Strategy 6 (picks corner opposite opponent) is excluded because I cannot understand its heuristic */
@@ -133,3 +129,43 @@ test('picks move than wins most quickly', (t) => {
     2, 0, 2,
   ], 2), 7);
 });
+
+test('determines whether the other player will take a route', (t) => {
+  t.true(ai.otherPlayerWillNotTakeRoute(10, 0));
+  t.false(ai.otherPlayerWillNotTakeRoute(0, 10));
+});
+
+test('prunes branches from game tree', (t) => {
+  t.deepEqual(ai.scoreNextMoves([
+    1, 0, 1,
+    2, 0, 2,
+    2, 0, 0,
+  ], 1), [99, 97, 0, 97]);
+});
+
+test.serial('pruning yields a speed increase', (t) => {
+  const t0 = process.hrtime();
+  ai.scoreNextMoves([
+    0, 0, 0,
+    0, 0, 0,
+    0, 0, 0,
+  ], 1);
+  const prunedTime = process.hrtime(t0);
+  const unprunedScorer = (board, player, depth = 0) =>
+    ai.getNextBoards(board, player)
+      .map(ai.deeplyScoreMove(player, depth + 1));
+
+  stub(ai, 'scoreNextMoves', unprunedScorer);
+  const t1 = process.hrtime();
+  ai.scoreNextMoves([
+    0, 0, 0,
+    0, 0, 0,
+    0, 0, 0,
+  ], 1);
+  const unprunedTime = process.hrtime(t1);
+  t.true(unprunedTime > prunedTime);
+  // eslint-disable-next-line no-console
+  console.log(`speed ${unprunedTime} improved to ${prunedTime}`);
+  ai.scoreNextMoves.restore();
+});
+

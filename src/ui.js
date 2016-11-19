@@ -12,21 +12,21 @@ export const getToken = (player) => {
 export const getBoardTokens = board =>
   board.map(player => ({ text: getToken(player) }));
 
-export const getWinner = ({ board, player }) => {
+export const getWinner = (game) => {
   let winner;
-  const lastPlayer = fromBoard.switchPlayer(player);
-  if (fromBoard.isWinner(board, lastPlayer)) winner = lastPlayer;
-  if (fromBoard.isBoardFull(board)) winner = 0;
+  const lastPlayer = fromBoard.switchPlayer(game.player);
+  if (fromBoard.isWinner(game.board, lastPlayer)) winner = lastPlayer;
+  if (fromBoard.isBoardFull(game.board)) winner = 0;
   return {
-    board,
-    player,
+    ...game,
     winner,
   };
 };
 
-export const nextBoard = (board, player) => idx => ({
-  board: fromBoard.movePlayerToIndex(board, player)(idx),
-  player: fromBoard.switchPlayer(player),
+export const nextGameState = game => idx => ({
+  ...game,
+  board: fromBoard.movePlayerToIndex(game.board, game.player)(idx),
+  player: fromBoard.switchPlayer(game.player),
 });
 
 
@@ -37,19 +37,22 @@ export const bindBoard = (boardTokens, resolve, getArg) =>
       clickHandler: resolve.bind(null, getArg(idx)),
     }) : token));
 
-export const getBoardData = (type, resolve, { player, board }) => {
+export const getDelay = gametype =>
+  (gametype === 2 ? 500 : 100);
+
+export const getBoardData = (type, resolve, game) => {
   if (type === 'human') {
     return bindBoard(
-      getBoardTokens(board),
+      getBoardTokens(game.board),
       resolve,
-      nextBoard(board, player),
+      nextGameState(game),
     );
   }
   setTimeout(() => {
-    const computerMove = getBestMove(board, player);
-    resolve(nextBoard(board, player)(computerMove));
-  }, 0);
-  return getBoardTokens(board);
+    const computerMove = getBestMove(game.board, game.player);
+    resolve(nextGameState(game)(computerMove));
+  }, getDelay(game.gametype));
+  return getBoardTokens(game.board);
 };
 
 export const getOptionsFor = (type, oldOptions) => {

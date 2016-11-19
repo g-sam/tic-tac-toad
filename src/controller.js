@@ -41,7 +41,10 @@ export default class Controller {
     const nextTurn = this.setTurnSequence(options);
     const checkedTurn = this.checkTurn(nextTurn);
     const turnSequence = this.chainTurns(checkedTurn);
-    return Promise.resolve(this.initialGame)
+    return Promise.resolve({
+      ...this.initialGame,
+      gametype: options.game,
+    })
       .then(turnSequence);
   }
 
