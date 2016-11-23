@@ -10,7 +10,7 @@ const html = readFileSync('../public/index.html', 'utf8');
 test.beforeEach((t) => {
   const window = jsdom(html).defaultView;
   const $ = jquery(window);
-  t.context = new DOMRenderer($); // eslint-disable-line no-param-reassign
+  t.context = new DOMRenderer(window, $); // eslint-disable-line no-param-reassign
 });
 
 test('tests can access mock dom', (t) => {

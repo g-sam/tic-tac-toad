@@ -52,74 +52,145 @@ export const getBoardData = (type, resolve, { player, board }) => {
   return getBoardTokens(board);
 };
 
-export const getOptionsFor = (type, oldOptions) => {
-  if (type === 'game') {
-    return {
-      title: 'Select game type',
-      options: [
-        { text: 'Human vs. human' },
-        { text: 'Computer vs. human' },
-        { text: 'Computer vs. computer' },
-      ],
-    };
-  } else if (type === 'player') {
-    return {
-      title: 'Choose who goes first',
-      options: [
-        { text: 'Me!!!' },
-        { text: 'Computer' },
-      ],
-    };
-  } else if (type === 'ready') {
-    return {
-      title: [
-        'human vs. human',
-        'computer vs. human',
-        'computer vs. computer',
-      ][oldOptions.game],
-      options: [],
-    };
-  } else if (type === 'restart') {
-    return {
-      title: `${oldOptions.winner ? `${getToken(oldOptions.winner)} wins!` : 'draw!'}`,
-      options: [
-        { text: 'Play again' },
-      ],
-    };
-  }
-  return {
-    title: '',
-    options: [],
+export const getOptionsData = (nextState, nextAction) => {
+  switch (nextAction.type) {
+    case 'start':
+      return {
+        title: 'Select game type',
+        options: [
+          { text: 'Human vs. human' },
+          { text: 'Computer vs. human' },
+          { text: 'Computer vs. computer' },
+        ],
+      }
+    case 'player':
+      return {
+          title: 'Choose who goes first',
+          options: [
+            { text: 'Me!!!' },
+            { text: 'Computer' },
+          ],
+        };
+    case 'ready':
+      return {
+        title: [
+          'human vs. human',
+          'computer vs. human',
+          'computer vs. computer',
+        ][nextState.game],
+        options: [],
+      };
+    case 'restart':
+      return {
+        title: `${nextState.winner ? `${getToken(nextState.winner)} wins!` : 'draw!'}`,
+        options: [
+          { text: 'Play again' },
+        ],
+      };
+    default:
+      return {
+        title: '',
+        options: [],
+      };
   };
-};
+}
 
-export const getResolveArg = (type, oldOptions) => idx => ({
-  ...oldOptions,
-  [type]: idx,
-});
+export const getOptionsHandler = (nextState, nextAction) => idx => ({
+    ...nextState,
+    [nextAction.type]: idx,
+  });
 
-export const bindOptions = (optionObj, resolve, getArg) => ({
-  ...optionObj,
-  options: optionObj.options.map((option, idx) => ({
-    ...option,
-    clickHandler: resolve.bind(null, getArg(idx)),
-  })),
-});
+export const bindOptions = (nextState, nextAction, render) => {
+    const getArg = getOptionsHandler(nextState, nextAction); 
+    const optionsData = getOptionsData(nextState, nextAction);
+    return {
+      ...optionsData,
+      options: optionsData.options.map((option, idx) => ({
+        ...option,
+        clickHandler: render.bind(null, getArg(idx)),
+      })),
+    };
+}
 
 
-export const getOptionsData = (type, resolve, oldOptions) => {
-  if (type === 'player') {
-    if (oldOptions.game !== 1) {
-      resolve(oldOptions);
-      return getOptionsFor();
-    }
-  } else if (type === 'ready') {
-    resolve(oldOptions);
-    return getOptionsFor(type, oldOptions);
+const getNextView = (nextAction, nextState, render) => {
+  switch (nextAction.type) {
+    case 'start':
+    case 'game':
+    case 'player':
+      if (nextState.game !== 1) {
+        return {
+          options: getOptionsFor(),
+          nowait: true,
+        };
+      }
+      /* FALLTHROUGH */
+    case 'reset':
+      return {
+        options: bindOptions(
+          nextState,
+          nextAction,
+          render,
+        ),
+        nowait: false,
+      };
+    case 'ready':
+      return {
+        options: getOptionsFor(nextAction, nextState),
+        nowait: true,
+      };
+    case 'play': 
+      return {
+        board: bindBoard(
+          nextState,
+          nextAction,
+          render,
+        ),
+        nowait: nextState.player 
+      }
+    default: return {};
+
   }
-  return bindOptions(
-    getOptionsFor(type, oldOptions),
-    resolve,
-    getResolveArg(type, oldOptions),
-  );
 };
+
+export const getNextState = (state, action) => {
+  switch (action.type) {
+    case 'start': return {};
+    case 'game': return {
+      ...state,
+      game: action.data,
+    };
+    case 'player': return {
+      ...state,
+      players: setPlayers(state.game, action.data),
+    };
+    case 'play': return {
+      ...state,
+      gameState: action.data,
+    };
+    default: return state;
+  }
+};
+
+const setPlayers = (game, firstPlayer) => {
+    if (game === 0) {
+      return {
+        first: 'human',
+        second: 'human',
+      };
+    } else if (game === 1 && firstPlayer === 0) {
+      return {
+        first: 'human',
+        second: 'computer',
+      };
+    } else if (game === 1 && firstPlayer === 1) {
+      return {
+        first: 'computer',
+        second: 'human',
+      };
+    }
+  return {
+    first: 'computer',
+    second: 'computer',
+  };
+}
