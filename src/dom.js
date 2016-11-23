@@ -1,6 +1,7 @@
 export default class DOMRenderer {
-  constructor(context) {
-    this.$ = context;
+  constructor(window, jquery) {
+    this.window = window;
+    this.$ = jquery;
   }
   static getBoardHTML(boardData) {
     return `<table>
@@ -30,5 +31,8 @@ export default class DOMRenderer {
         .text(text)
         .click(clickHandler)
         .appendTo('.buttons'));
+  }
+  delayedRender(render) {
+    this.window.requestAnimationFrame(render);
   }
 }

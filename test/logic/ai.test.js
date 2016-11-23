@@ -1,6 +1,6 @@
 import { stub } from 'sinon';
 import test from 'ava';
-import * as ai from '../src/ai';
+import * as ai from '../../src/logic/ai';
 
 test('scores a board for a player', (t) => {
   t.is(ai.score([

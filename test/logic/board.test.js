@@ -1,5 +1,5 @@
 import test from 'ava';
-import * as board from '../src/board';
+import * as board from '../../src/logic/board';
 
 test('generates empty board', (t) => {
   t.deepEqual(
