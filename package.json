@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "precommit": "npm run lint && npm t && npm run coverage",
     "coverage": "nyc check-coverage --lines 95 --functions 95 --branches 95",
-    "report": "nyc report --reporter=html"
+    "report": "nyc report --reporter=html",
+    "start": "node server.js",
+    "postinstall": "webpack --config ./webpack.config.babel.js --progress --colors"
   },
   "babel": {
     "presets": [
@@ -33,24 +35,27 @@
   "license": "ISC",
   "devDependencies": {
     "ava": "^0.16.0",
-    "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.0",
-    "babel-loader": "^6.2.7",
-    "babel-preset-latest": "^6.16.0",
-    "babel-preset-stage-2": "^6.17.0",
-    "cheerio": "^0.22.0",
     "eslint": "^3.10.2",
     "eslint-config-airbnb-base": "^10.0.1",
     "eslint-plugin-import": "^2.2.0",
     "husky": "^0.11.9",
     "jsdom": "^9.8.3",
     "nyc": "^8.4.0",
-    "sinon": "^1.17.6",
-    "webpack": "^1.13.3"
+    "sinon": "^1.17.6"
   },
   "dependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.7",
+    "babel-preset-latest": "^6.16.0",
+    "babel-preset-stage-2": "^6.17.0",
+    "webpack": "^1.13.3",
     "babel-polyfill": "^6.16.0",
+    "express": "^4.14.0",
     "jquery": "^3.1.1",
     "ramda": "^0.22.1"
+  },
+  "engines": {
+    "node": "6.2.2"
   }
 }
