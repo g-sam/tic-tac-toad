@@ -21,6 +21,7 @@ The game is hosted here: https://tic-tac-toad.herokuapp.com/
 - Redux-flavoured state management.
 
 ##### Dependency structure
+
 ```
                      board -------> ai
                        |             |
@@ -37,5 +38,14 @@ The game is hosted here: https://tic-tac-toad.herokuapp.com/
      |                  |
      +--> Controller <--+
 ```
+
+--  
+  
+Put up in a place  
+Where it's easy to see  
+The cryptic admonishment  
+T. T. T.    
+ —Piet Hein
+
 
 
