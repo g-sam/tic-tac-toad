@@ -8,9 +8,12 @@ test.beforeEach((t) => {
   t.context = new Game(logic); // eslint-disable-line no-param-reassign
 });
 
-test('gets empty board', (t) => {
-  stub(t.context.logic, 'getEmptyBoard').returns('board');
-  t.is(t.context.getEmptyBoard(), 'board');
+test('getEmptyBoard calls logic.getEmptyBoard with correct argument', (t) => {
+  const emptyBoardFromLogic = spy(t.context.logic, 'getEmptyBoard');
+  t.context.getEmptyBoard();
+  t.context.getEmptyBoard(0);
+  t.context.getEmptyBoard(1);
+  t.deepEqual(emptyBoardFromLogic.args, [[3], [3], [4]]);
 });
 
 test('getToken returns x for player 1, o for player 2, or default empty string', (t) => {

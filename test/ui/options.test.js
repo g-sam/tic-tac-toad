@@ -6,6 +6,11 @@ test.beforeEach((t) => {
   t.context = new Opts(); // eslint-disable-line no-param-reassign
 });
 
+test('gets correct options data when nextAction is "set_boardsize"', (t) => {
+  stub(t.context, 'selectBoardSize').returns('correct');
+  t.is(t.context.getData({ nextAction: 'set_boardsize' }), 'correct');
+});
+
 test('gets correct options data when nextAction is "set_gametype"', (t) => {
   stub(t.context, 'selectGameType').returns('correct');
   t.is(t.context.getData({ nextAction: 'set_gametype' }), 'correct');
@@ -38,8 +43,12 @@ test('gets correct options data when no nextAction is provided', (t) => {
   });
 });
 
-test('selectGameType and selectFirstPlayer return objects with title and options', (t) => {
-  [t.context.selectGameType(), t.context.selectFirstPlayer()].forEach((obj) => {
+test('selectBoardSize, selectGameType and selectFirstPlayer return objects with title and options', (t) => {
+  [
+    t.context.selectGameType(),
+    t.context.selectFirstPlayer(),
+    t.context.selectBoardSize(),
+  ].forEach((obj) => {
     t.deepEqual(Object.keys(obj), ['title', 'options']);
     t.true(Array.isArray(obj.options));
     t.is(typeof obj.title, 'string');

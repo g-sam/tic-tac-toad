@@ -1,7 +1,7 @@
-import { chain } from 'ramda';
+import { chain, memoize } from 'ramda';
 
-export const getEmptyBoard = () =>
-  Array(9).fill(0);
+export const getEmptyBoard = size =>
+  Array(size ** 2).fill(0);
 
 export const switchPlayer = player =>
   (player === 1 ? 2 : 1);
@@ -19,37 +19,39 @@ export const getEmptyIndices = board =>
       [],
   );
 
-export const isBoardFull = board => (getEmptyIndices(board).length === 0);
+export const isBoardFull = board =>
+  (getEmptyIndices(board).length === 0);
 
-const rowIndicesAt = i => j =>
-  j + (i * 3);
+const rows = size => i => j =>
+  j + (i * size);
 
-const colIndicesAt = i => j =>
-  (j * 3) + i;
+const cols = size => i => j =>
+  (j * size) + i;
 
-const downDiagIndices = i => j =>
-  (i * j) + i;
+const downDiagIndices = size => j =>
+  ((size - 1) * j) + (size - 1);
 
-const upDiagIndices = i => j =>
-  (i * j) + (2 * j);
+const upDiagIndices = size => j =>
+  ((size - 1) * j) + (2 * j);
 
-export const generateIndicesOfLines = () => {
-  const range = [...Array(3).keys()];
+export const generateIndicesOfLines = memoize((board) => {
+  const size = Math.sqrt(board.length);
+  const range = [...Array(size).keys()];
+  const rowIndicesAt = rows(size);
+  const colIndicesAt = cols(size);
   return chain((i => [
     range.map(rowIndicesAt(i)),
     range.map(colIndicesAt(i)),
   ]), range)
-    .concat([range.map(downDiagIndices(2))])
-    .concat([range.map(upDiagIndices(2))]);
-};
-
-const indicesOfWinningLines = generateIndicesOfLines();
+    .concat([range.map(downDiagIndices(size))])
+    .concat([range.map(upDiagIndices(size))]);
+});
 
 const isWinningLine = (board, player) => line =>
   line.every(i => board[i] === player);
 
 export const isWinner = (board, player) =>
-  indicesOfWinningLines
+  generateIndicesOfLines(board)
     .some(isWinningLine(board, player));
 
 export const isGameOver = (board, player) =>

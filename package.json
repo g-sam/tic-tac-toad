@@ -4,11 +4,12 @@
   "description": "TDD Tic Tac Toe",
   "main": "index.js",
   "scripts": {
-    "test": "nyc ava --verbose",
-    "dev": "webpack -d --watch",
-    "tdd": "nyc ava --verbose --watch --source ./src/**/**/*.js & webpack -d --watch & wait",
     "lint": "eslint .",
-    "precommit": "npm run lint && npm t && npm run coverage",
+    "test": "nyc ava --verbose",
+    "dev": "webpack-dev-server --content-base public/ --inline",
+    "test-watch": "nyc ava --verbose --watch --source ./src/**/**/*.js",
+    "tdd": "npm-run-all --parallel test-watch dev",
+    "precommit": "npm-run-all --silent --serial lint test coverage",
     "coverage": "nyc check-coverage --lines 95 --functions 95 --branches 95",
     "report": "nyc report --reporter=html",
     "start": "node server.js",
@@ -42,18 +43,20 @@
     "husky": "^0.11.9",
     "jsdom": "^9.8.3",
     "nyc": "^8.4.0",
-    "sinon": "^1.17.6"
+    "sinon": "^1.17.6",
+    "webpack-dev-server": "^1.16.2"
   },
   "dependencies": {
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.7",
+    "babel-polyfill": "^6.16.0",
     "babel-preset-latest": "^6.16.0",
     "babel-preset-stage-2": "^6.17.0",
-    "webpack": "^1.13.3",
-    "babel-polyfill": "^6.16.0",
     "express": "^4.14.0",
     "jquery": "^3.1.1",
-    "ramda": "^0.22.1"
+    "npm-run-all": "^3.1.2",
+    "ramda": "^0.22.1",
+    "webpack": "^1.13.3"
   },
   "engines": {
     "node": "6.2.2"

@@ -13,7 +13,7 @@ test.beforeEach((t) => {
 });
 
 test('nextAction returns value next in array of actions', (t) => {
-  t.is(t.context.nextAction('start'), 'set_gametype');
+  t.is(t.context.nextAction('start'), 'set_boardsize');
   t.is(t.context.nextAction('end'), 'start');
 });
 
@@ -29,6 +29,16 @@ test('getNextState receives correct default values', (t) => {
   stub(t.context, 'nextAction').returns('action');
   t.deepEqual(t.context.getNextState(), {
     ...t.context.initialState,
+    nextAction: 'action',
+  });
+});
+
+test('getNextState merges new board and next action into state for "set_boardsize" action', (t) => {
+  stub(t.context, 'nextAction').returns('action');
+  stub(t.context.game, 'getEmptyBoard', arg => arg);
+  t.deepEqual(t.context.getNextState({ prev: 'state' }, { type: 'set_boardsize', data: 'newstate' }), {
+    prev: 'state',
+    gameState: { board: 'newstate' },
     nextAction: 'action',
   });
 });

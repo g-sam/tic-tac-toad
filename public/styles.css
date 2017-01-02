@@ -10,7 +10,6 @@ h1 {
 table {
   table-layout: fixed;
   border-collapse: collapse;
-  width: 240px;
   margin: 0 auto;
   font-size: x-large;
 }

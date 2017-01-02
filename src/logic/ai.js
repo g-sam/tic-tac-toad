@@ -1,52 +1,66 @@
 import * as fromBoard from './board';
 
-export const score = (board, player, depth) =>
-  (fromBoard.isWinner(board, player) ? 100 - depth : 0);
+function memoize(fn) {
+  const cache = {};
+  const hash = JSON.stringify;
+  return function (...args) {
+    const key = hash(args);
+    if (!cache[key]) cache[key] = fn.apply(this, args);
+    return cache[key];
+  };
+}
 
-export const deeplyScoreMove = (player, depth, currPlayerBest, otherPlayerBest) => board =>
-  (fromBoard.isGameOver(board, player) ?
-    score(board, player, depth) :
-    // eslint-disable-next-line no-use-before-define
-    -Math.max(...scoreNextMoves(
-      board, fromBoard.switchPlayer(player),
-      depth, currPlayerBest, otherPlayerBest,
-    )));
+export default class AI {
+  score = memoize((board, player, depth) =>
+    (fromBoard.isWinner(board, player) ? 100 - depth : 0));
 
-export const otherPlayerWillNotTakeRoute = (currBest, otherBest) => (currBest >= otherBest);
+  deeplyScoreMove = memoize((player, depth, currPlayerBest, otherPlayerBest) => board =>
+    (fromBoard.isGameOver(board, player) ?
+      this.score(board, player, depth) :
+      // eslint-disable-next-line no-use-before-define
+      -Math.max(...this.scoreNextMoves(
+        board, fromBoard.switchPlayer(player),
+        depth, currPlayerBest, otherPlayerBest,
+      ))));
 
-export const prunedScoring = (player, depth, currPlayerBest, otherPlayerBest) =>
-  (scores, currBoard) => {
-    const newCurrPlayerBest = Math.max(...scores, currPlayerBest);
-    if (otherPlayerWillNotTakeRoute(newCurrPlayerBest, otherPlayerBest)) {
+  otherPlayerWillBlock = memoize((currBest, otherBest) =>
+    (currBest >= otherBest));
+
+  prunedScoring = memoize((player, depth, currPlayerBest, otherPlayerBest) =>
+    (scores, currBoard) => {
+      const newCurrPlayerBest = Math.max(...scores, currPlayerBest);
+      if (this.otherPlayerWillBlock(newCurrPlayerBest, otherPlayerBest)) {
+        return [
+          ...scores,
+          newCurrPlayerBest,
+        ];
+      }
       return [
         ...scores,
-        newCurrPlayerBest,
+        this.deeplyScoreMove(player, depth + 1, -otherPlayerBest, -newCurrPlayerBest)(currBoard),
       ];
-    }
-    return [
-      ...scores,
-      deeplyScoreMove(player, depth + 1, -otherPlayerBest, -newCurrPlayerBest)(currBoard),
-    ];
-  };
+    });
 
-export const getNextBoards = (board, player) =>
+  getNextBoards = memoize((board, player) =>
     fromBoard.getEmptyIndices(board, player)
-    .map(fromBoard.movePlayerToIndex(board, player));
+    .map(fromBoard.movePlayerToIndex(board, player)));
 
-export const scoreNextMoves = (board, player,
-  depth = 0,
-  currPlayerBest = -100,
-  otherPlayerBest = 100,
-) =>
-  getNextBoards(board, player)
-  .reduce(
-    prunedScoring(player, depth, currPlayerBest, otherPlayerBest),
-    [],
-  );
+  scoreNextMoves = memoize((
+    board, player,
+    depth = 0,
+    currPlayerBest = -100,
+    otherPlayerBest = 100,
+  ) =>
+    this.getNextBoards(board, player)
+    .reduce(
+      this.prunedScoring(player, depth, currPlayerBest, otherPlayerBest),
+      [],
+    ));
 
-export const getBestMove = (board, player) =>
-  fromBoard.getEmptyIndices(board, player)[
-    scoreNextMoves(board, player)
-    .reduce((idxOfMax, crntScore, idx, scores) =>
+  getBestMove = (board, player) =>
+    fromBoard.getEmptyIndices(board, player)[
+      this.scoreNextMoves(board, player)
+      .reduce((idxOfMax, crntScore, idx, scores) =>
         (crntScore > scores[idxOfMax] ? idx : idxOfMax), 0)
-  ];
+    ];
+}

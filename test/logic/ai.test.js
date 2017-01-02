@@ -1,6 +1,7 @@
-import { stub } from 'sinon';
 import test from 'ava';
-import * as ai from '../../src/logic/ai';
+import AI from '../../src/logic/ai';
+
+const ai = new AI();
 
 test('scores a board for a player', (t) => {
   t.is(ai.score([
@@ -131,11 +132,11 @@ test('picks move than wins most quickly', (t) => {
 });
 
 test('determines whether the other player will take a route', (t) => {
-  t.true(ai.otherPlayerWillNotTakeRoute(10, 0));
-  t.false(ai.otherPlayerWillNotTakeRoute(0, 10));
+  t.true(ai.otherPlayerWillBlock(10, 0));
+  t.false(ai.otherPlayerWillBlock(0, 10));
 });
 
-test('prunes branches from game tree', (t) => {
+test('pruning produces expected scores', (t) => {
   t.deepEqual(ai.scoreNextMoves([
     1, 0, 1,
     2, 0, 2,
@@ -143,29 +144,49 @@ test('prunes branches from game tree', (t) => {
   ], 1), [99, 97, 0, 97]);
 });
 
-test.serial.skip('pruning yields a speed increase', (t) => {
-  const t0 = process.hrtime();
-  ai.scoreNextMoves([
-    0, 0, 0,
-    0, 0, 0,
-    0, 0, 0,
-  ], 1);
-  const prunedTime = process.hrtime(t0);
-  const unprunedScorer = (board, player, depth = 0) =>
-    ai.getNextBoards(board, player)
-      .map(ai.deeplyScoreMove(player, depth + 1));
+// Sinon is too slow for the next test
+const fastSpy = (ctx, fn) =>
+  function spy(...args) {
+    spy.calls = spy.calls + 1 || 1;
+    return fn.apply(ctx, args);
+  };
 
-  stub(ai, 'scoreNextMoves', unprunedScorer);
-  const t1 = process.hrtime();
-  ai.scoreNextMoves([
+test('pruning results in fewer function calls', (t) => {
+  const aiTemp = new AI();
+  aiTemp.scoreNextMoves = fastSpy(aiTemp, aiTemp.scoreNextMoves);
+  aiTemp.scoreNextMoves([
     0, 0, 0,
+    0, 1, 0,
     0, 0, 0,
+  ], 2);
+  const prunedCalls = aiTemp.scoreNextMoves.calls;
+
+  const unprunedScorer = (board, player, depth = 0) =>
+    aiTemp.getNextBoards(board, player)
+      .map(aiTemp.deeplyScoreMove(player, depth + 1));
+
+  aiTemp.scoreNextMoves = fastSpy(aiTemp, unprunedScorer);
+  aiTemp.scoreNextMoves([
     0, 0, 0,
-  ], 1);
-  const unprunedTime = process.hrtime(t1);
-  t.true(unprunedTime > prunedTime);
-  // eslint-disable-next-line no-console
-  console.log(`speed ${unprunedTime} improved to ${prunedTime}`);
-  ai.scoreNextMoves.restore();
+    0, 1, 0,
+    0, 0, 0,
+  ], 2);
+  const unprunedCalls = aiTemp.scoreNextMoves.calls;
+
+  t.true(unprunedCalls > prunedCalls);
+// eslint-disable-next-line no-console
+  console.log(`    ai-log: ${unprunedCalls} calls pruned to ${prunedCalls}`);
 });
 
+test.skip('performance', (t) => {
+  const t0 = process.hrtime();
+  ai.scoreNextMoves([
+    1, 0, 0, 1,
+    0, 1, 0, 0,
+    1, 0, 2, 0,
+    0, 2, 0, 2,
+  ], 2);
+  const dt = process.hrtime(t0);
+  console.log(dt);
+  t.pass();
+});

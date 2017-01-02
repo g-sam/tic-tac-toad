@@ -1,4 +1,12 @@
 export default class Opts {
+  selectBoardSize = () => ({
+    title: 'Select board size',
+    options: [
+      { text: '3x3' },
+      { text: '4x4' },
+    ],
+  });
+
   selectGameType = () => ({
     title: 'Select game type',
     options: [
@@ -30,6 +38,7 @@ export default class Opts {
 
   getData = (state) => {
     switch (state.nextAction) {
+      case 'set_boardsize': return this.selectBoardSize();
       case 'set_gametype': return this.selectGameType();
       case 'set_firstplayer': return this.selectFirstPlayer();
       case 'take_move': return this.showGameType(state);

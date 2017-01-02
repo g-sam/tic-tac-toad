@@ -3,7 +3,8 @@ export default class Game {
     this.logic = logic;
   }
 
-  getEmptyBoard = () => this.logic.getEmptyBoard();
+  getEmptyBoard = selection =>
+    this.logic.getEmptyBoard(selection === 1 ? 4 : 3);
 
   getToken = (player) => {
     if (player === 1) return 'x';

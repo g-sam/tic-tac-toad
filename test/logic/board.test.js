@@ -1,13 +1,22 @@
 import test from 'ava';
 import * as board from '../../src/logic/board';
 
-test('generates empty board', (t) => {
+test('generates empty board of correct size', (t) => {
   t.deepEqual(
-    board.getEmptyBoard(),
+    board.getEmptyBoard(3),
     [
       0, 0, 0,
       0, 0, 0,
       0, 0, 0,
+    ],
+  );
+  t.deepEqual(
+    board.getEmptyBoard(4),
+    [
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, 0,
     ],
   );
 });
@@ -18,7 +27,7 @@ test('switches player', (t) => {
 });
 
 test('move player to index', (t) => {
-  const newBoard = board.movePlayerToIndex(board.getEmptyBoard(), 1)(3);
+  const newBoard = board.movePlayerToIndex(board.getEmptyBoard(3), 1)(3);
   t.deepEqual(
     newBoard,
     [
@@ -54,8 +63,13 @@ test('checks if board is full', (t) => {
 });
 
 test('generate indices of winning lines', (t) => {
+  const testBoard = [
+    0, 2, 0,
+    1, 0, 0,
+    2, 0, 0,
+  ];
   t.deepEqual(
-    board.generateIndicesOfLines(),
+    board.generateIndicesOfLines(testBoard),
     [
       [0, 1, 2],
       [0, 3, 6],

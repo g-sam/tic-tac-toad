@@ -12,6 +12,7 @@ export default class UI {
 
   actionSeq = [
     'start',
+    'set_boardsize',
     'set_gametype',
     'set_firstplayer',
     'begin_game',
@@ -32,6 +33,14 @@ export default class UI {
     switch (action.type) {
       case 'start': return {
         ...this.initialState,
+        nextAction: this.nextAction(action.type),
+      };
+      case 'set_boardsize': return {
+        ...state,
+        gameState: {
+          ...state.gameState,
+          board: this.game.getEmptyBoard(action.data),
+        },
         nextAction: this.nextAction(action.type),
       };
       case 'set_gametype': return {

@@ -4,11 +4,12 @@ export default class DOMRenderer {
     this.$ = jquery;
   }
   static getBoardHTML(boardData) {
-    return `<table>
+    const size = Math.sqrt(boardData.length);
+    return `<table style="width: ${size * 80}px;">
   <tbody>${boardData.map(({ text }, idx) => `\
-    ${idx % 3 === 0 ? '\n   <tr>' : ''}
+    ${idx % size === 0 ? '\n   <tr>' : ''}
     <td><div>${text}</div></td>\
-    ${idx % 3 === 2 ? '\n   </tr>' : ''}`)
+    ${idx % size === size - 1 ? '\n   </tr>' : ''}`)
     .join('')}
   </tbody>
 </table>`;

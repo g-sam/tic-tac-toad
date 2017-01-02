@@ -1,4 +1,4 @@
-import { getBestMove } from './ai';
+import AI from './ai';
 import {
   getEmptyBoard,
   isBoardFull,
@@ -8,7 +8,7 @@ import {
 } from './board';
 
 export default class Logic {
-  getBestMove = getBestMove;
+  getBestMove = new AI().getBestMove;
   getEmptyBoard = getEmptyBoard;
   isBoardFull = isBoardFull;
   isWinner = isWinner;

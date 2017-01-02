@@ -65,3 +65,10 @@ test('board is inserted into dom with correct attributes', (t) => {
   t.deepEqual(actualClasses, expectedClasses);
   t.is(clickHandler.callCount, 5);
 });
+
+test('delayedRender passes its argument to requestAnimationFrame', (t) => {
+  const window = t.context.window;
+  window.requestAnimationFrame = spy();
+  t.context.delayedRender('arg');
+  t.deepEqual(window.requestAnimationFrame.args[0], ['arg']);
+});
