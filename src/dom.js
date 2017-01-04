@@ -15,9 +15,10 @@ export default class DOMRenderer {
 </table>`;
   }
   renderBoard(boardData) {
+    if (!boardData) return this.$('.board').html('<h3>CONFIGURE</h3>');
     this.$('.board')
       .html(DOMRenderer.getBoardHTML(boardData));
-    boardData.forEach(({ clickHandler }, idx) => {
+    return boardData.forEach(({ clickHandler }, idx) => {
       if (clickHandler) {
         this.$('.board td').eq(idx)
           .click(clickHandler)
@@ -34,6 +35,6 @@ export default class DOMRenderer {
         .appendTo('.buttons'));
   }
   delayedRender(render) {
-    this.window.requestAnimationFrame(render);
+    if (render) this.window.requestAnimationFrame(render);
   }
 }

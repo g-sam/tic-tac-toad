@@ -1,5 +1,8 @@
+import { stub } from 'sinon';
 import test from 'ava';
-import * as board from '../../src/logic/board';
+import Board from '../../src/logic/board';
+
+const board = new Board();
 
 test('generates empty board of correct size', (t) => {
   t.deepEqual(
@@ -19,11 +22,6 @@ test('generates empty board of correct size', (t) => {
       0, 0, 0, 0,
     ],
   );
-});
-
-test('switches player', (t) => {
-  t.is(board.switchPlayer(1), 2);
-  t.is(board.switchPlayer(2), 1);
 });
 
 test('move player to index', (t) => {
@@ -59,6 +57,19 @@ test('checks if board is full', (t) => {
     1, 2, 2,
     1, 1, 2,
     2, 1, 2,
+  ]));
+});
+
+test('checks if board is empty', (t) => {
+  t.false(board.isBoardEmpty([
+    0, 0, 0,
+    1, 0, 0,
+    0, 0, 0,
+  ]));
+  t.true(board.isBoardEmpty([
+    0, 0, 0,
+    0, 0, 0,
+    0, 0, 0,
   ]));
 });
 
@@ -117,4 +128,23 @@ test('checks if game is over', (t) => {
     1, 0, 2,
     2, 1, 2,
   ], 2));
+});
+
+test('getWinner returns winning player', (t) => {
+  stub(board, 'isWinner').returns(true);
+  t.is(board.getWinner('board', 'player'), 'player');
+});
+
+test('getWinner returns 0 if draw', (t) => {
+  const board1 = new Board();
+  stub(board1, 'isWinner').returns(false);
+  stub(board1, 'isBoardFull').returns(true);
+  t.is(board1.getWinner('board', 'player'), 0);
+});
+
+test('getWinner returns undefined if game not over', (t) => {
+  const board1 = new Board();
+  stub(board1, 'isWinner').returns(false);
+  stub(board1, 'isBoardFull').returns(false);
+  t.is(board1.getWinner('board', 'player'), undefined);
 });
