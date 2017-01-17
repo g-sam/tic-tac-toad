@@ -57,7 +57,7 @@ export default class AI {
     ));
 
   shouldPickQuick = (board, player) =>
-    (this.board.getEmptyIndices(board, player).length >= 15);
+    (this.board.getEmptyIndices(board, player).length >= 13);
 
   getBestMove = (board, player) =>
     (this.shouldPickQuick(board, player)

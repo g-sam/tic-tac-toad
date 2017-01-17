@@ -220,4 +220,10 @@ test('ai never loses to opponent playing randomly', (t) => {
     const state = playGame(0);
     t.true(state.winner === '' || state.winner === 'o');
   }
+  /* Test 4x4. Slow!
+  for (let i = 0; i < 100; i += 1) {
+    const state = playGame(1);
+    t.true(state.winner === '' || state.winner === 'o');
+  }
+  */
 });
