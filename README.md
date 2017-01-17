@@ -4,7 +4,7 @@ Tic-tac-toe implemented in Javascript with TDD.
 
 The game is hosted here: https://tic-tac-toad.herokuapp.com/
 
-##### Quickstart
+### Quickstart
 
 To install the project locally and start the Webpack dev server on port 8080:
 ```
@@ -16,7 +16,9 @@ Alternatively, `npm run tdd` will start the server and rerun tests on every chan
 
 To run tests and see coverage summary type `npm t`. 
 
-##### What's new?
+---
+
+### What's new?
 
 This section details the feedback received on the first iteration of the game and the changes made:
 
@@ -52,6 +54,7 @@ Given that all the information about the board can be calculated from its length
 
 Since I had already implemented alpha-beta pruning, memoization provided most of the required performance boost. In addition:
  - I initially thought it would be necessary to access a static cache to retrieve the first few moves (see `./cache.js`). In fact, the cache showed that the first available cell scores joint highest in the early stages of the game, so the first few moves simply take the first available cell without drawing on a static cache.
+ - Swapping out my chained reducers for a transducer provided a significant speed boost.
  - The artificial delay in the computer move is now less if the calculation took longer, reducing the apparent delay. 
  - The UI now updates with the previous move before locking up for the calculation and displays a message indicating whose turn it is. 
 
@@ -59,7 +62,7 @@ On my 2012 Macbook Pro the greatest noticeable delay is about a second.
 
 ---
 
-##### Features
+### Features
 - Choice of grids:
   - 3x3.
   - 4x4.
@@ -70,7 +73,7 @@ On my 2012 Macbook Pro the greatest noticeable delay is about a second.
 - User chooses who goes first.
 - Unbeatable computer player.
 
-##### Technologies
+### Technologies
 
 - ES6 and stage-2 language features transpiled by Webpack.
 - Ava, jsdom and sinon for testing.
@@ -78,7 +81,7 @@ On my 2012 Macbook Pro the greatest noticeable delay is about a second.
 - Negamax with alpha-beta pruning for ai.
 - Redux-flavoured state management.
 
-##### Dependency structure
+### Dependency structure
 
 ```
                      Board -------> Ai <----+
