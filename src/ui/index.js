@@ -1,58 +1,34 @@
+import { compose } from 'ramda';
+import {
+  start,
+  setBoardSize,
+  setGameType,
+  setFirstPlayer,
+  getMove,
+  takeMove,
+} from './actions';
+
 export default class UI {
   constructor(game, opts) {
-    this.game = game;
-    this.opts = opts;
-    this.initialState = {
-      gameState: {
-        board: game.getEmptyBoard(),
-        player: 1,
-      },
+    this.doSetFirstPlayer = compose(opts.selectFirstPlayer, game.setGameType);
+    this.skipSetFirstPlayer = compose(opts.showStatus, game.getMove, game.setGameType);
+    this.reducers = {
+      [start]: compose(opts.selectBoardSize, UI.clearState),
+      [setBoardSize]: compose(opts.selectGameType, game.initialize),
+      [setGameType]: (state, choice) =>
+        (choice === 1
+          ? this.doSetFirstPlayer(state, choice)
+          : this.skipSetFirstPlayer(state, choice)),
+      [setFirstPlayer]: compose(opts.showStatus, game.getMove, game.setFirstPlayer),
+      [getMove]: compose(opts.showStatus, game.getMove),
+      [takeMove]: compose(opts.showStatus, game.takeMove),
     };
   }
 
-  actionSeq = [
-    'start',
-    'set_gametype',
-    'set_firstplayer',
-    'begin_game',
-    'take_move',
-    'start',
-  ];
+  static clearState(state) {
+    return { render: state.render };
+  }
 
-  nextAction = type => this.actionSeq[this.actionSeq.indexOf(type) + 1];
-
-  getNextView = (state, render) => ({
-    options: this.opts.getData(state),
-    board: this.game.getData(state),
-    ...this.opts.getView(state, render),
-    ...this.game.getView(state, render),
-  });
-
-  getNextState = (state = this.initialState, action = { type: 'start' }) => {
-    switch (action.type) {
-      case 'start': return {
-        ...this.initialState,
-        nextAction: this.nextAction(action.type),
-      };
-      case 'set_gametype': return {
-        ...state,
-        gameType: action.data,
-        nextAction: this.nextAction(action.type),
-      };
-      case 'set_firstplayer': return {
-        ...state,
-        players: this.opts.setPlayers(state.gameType, action.data),
-        nextAction: this.nextAction(action.type),
-      };
-      case 'begin_game': return {
-        ...state,
-        nextAction: this.nextAction(action.type),
-      };
-      case 'take_move': return {
-        ...state,
-        ...this.game.updateGame(state, action.data, this.nextAction(action.type)),
-      };
-      default: return state;
-    }
-  };
+  getNextState = (state, action) =>
+    this.reducers[action.type](state, action.data);
 }

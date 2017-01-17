@@ -1,58 +1,68 @@
 import { chain } from 'ramda';
+import memoize from './memoize';
 
-export const getEmptyBoard = () =>
-  Array(9).fill(0);
+export default class Board {
+  getEmptyBoard = size =>
+    Array(size ** 2).fill(0);
 
-export const switchPlayer = player =>
-  (player === 1 ? 2 : 1);
+  movePlayerToIndex = (board, player) => idx => [
+    ...board.slice(0, idx),
+    player,
+    ...board.slice(idx + 1),
+  ];
 
-export const movePlayerToIndex = (board, player) => idx => [
-  ...board.slice(0, idx),
-  player,
-  ...board.slice(idx + 1),
-];
-
-export const getEmptyIndices = board =>
-  board.reduce(
-    (acc, curr, idx) =>
+  getEmptyIndices = memoize(board =>
+    board.reduce(
+      (acc, curr, idx) =>
       (curr === 0 ? acc.concat(idx) : acc),
       [],
-  );
+    ));
 
-export const isBoardFull = board => (getEmptyIndices(board).length === 0);
+  isBoardEmpty = board =>
+    (this.getEmptyIndices(board).length === board.length);
 
-const rowIndicesAt = i => j =>
-  j + (i * 3);
+  isBoardFull = board =>
+    (this.getEmptyIndices(board).length === 0);
 
-const colIndicesAt = i => j =>
-  (j * 3) + i;
+  rows = size => i => j =>
+    j + (i * size);
 
-const downDiagIndices = i => j =>
-  (i * j) + i;
+  cols = size => i => j =>
+    (j * size) + i;
 
-const upDiagIndices = i => j =>
-  (i * j) + (2 * j);
+  downDiagIndices = size => j =>
+    ((size - 1) * j) + (size - 1);
 
-export const generateIndicesOfLines = () => {
-  const range = [...Array(3).keys()];
-  return chain((i => [
-    range.map(rowIndicesAt(i)),
-    range.map(colIndicesAt(i)),
-  ]), range)
-    .concat([range.map(downDiagIndices(2))])
-    .concat([range.map(upDiagIndices(2))]);
-};
+  upDiagIndices = size => j =>
+    ((size - 1) * j) + (2 * j);
 
-const indicesOfWinningLines = generateIndicesOfLines();
+  generateIndicesOfLines = memoize((board) => {
+    const size = Math.sqrt(board.length);
+    const range = [...Array(size).keys()];
+    const rowIndicesAt = this.rows(size);
+    const colIndicesAt = this.cols(size);
+    return chain((i => [
+      range.map(rowIndicesAt(i)),
+      range.map(colIndicesAt(i)),
+    ]), range)
+      .concat([range.map(this.downDiagIndices(size))])
+      .concat([range.map(this.upDiagIndices(size))]);
+  });
 
-const isWinningLine = (board, player) => line =>
-  line.every(i => board[i] === player);
+  isWinningLine = (board, player) => line =>
+    line.every(i => board[i] === player);
 
-export const isWinner = (board, player) =>
-  indicesOfWinningLines
-    .some(isWinningLine(board, player));
+  isWinner = (board, player) =>
+    this.generateIndicesOfLines(board)
+      .some(this.isWinningLine(board, player));
 
-export const isGameOver = (board, player) =>
-  isWinner(board, player) || isBoardFull(board);
+  isGameOver = memoize((board, player) =>
+    this.isWinner(board, player) || this.isBoardFull(board));
 
-export default null;
+  getWinner = (board, player) => {
+    if (this.isWinner(board, player)) return player;
+    if (this.isBoardFull(board)) return 0;
+    return undefined;
+  }
+
+}

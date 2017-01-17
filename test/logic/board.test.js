@@ -1,24 +1,31 @@
+import { stub } from 'sinon';
 import test from 'ava';
-import * as board from '../../src/logic/board';
+import Board from '../../src/logic/board';
 
-test('generates empty board', (t) => {
+const board = new Board();
+
+test('generates empty board of correct size', (t) => {
   t.deepEqual(
-    board.getEmptyBoard(),
+    board.getEmptyBoard(3),
     [
       0, 0, 0,
       0, 0, 0,
       0, 0, 0,
     ],
   );
-});
-
-test('switches player', (t) => {
-  t.is(board.switchPlayer(1), 2);
-  t.is(board.switchPlayer(2), 1);
+  t.deepEqual(
+    board.getEmptyBoard(4),
+    [
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+    ],
+  );
 });
 
 test('move player to index', (t) => {
-  const newBoard = board.movePlayerToIndex(board.getEmptyBoard(), 1)(3);
+  const newBoard = board.movePlayerToIndex(board.getEmptyBoard(3), 1)(3);
   t.deepEqual(
     newBoard,
     [
@@ -53,9 +60,27 @@ test('checks if board is full', (t) => {
   ]));
 });
 
+test('checks if board is empty', (t) => {
+  t.false(board.isBoardEmpty([
+    0, 0, 0,
+    1, 0, 0,
+    0, 0, 0,
+  ]));
+  t.true(board.isBoardEmpty([
+    0, 0, 0,
+    0, 0, 0,
+    0, 0, 0,
+  ]));
+});
+
 test('generate indices of winning lines', (t) => {
+  const testBoard = [
+    0, 2, 0,
+    1, 0, 0,
+    2, 0, 0,
+  ];
   t.deepEqual(
-    board.generateIndicesOfLines(),
+    board.generateIndicesOfLines(testBoard),
     [
       [0, 1, 2],
       [0, 3, 6],
@@ -103,4 +128,23 @@ test('checks if game is over', (t) => {
     1, 0, 2,
     2, 1, 2,
   ], 2));
+});
+
+test('getWinner returns winning player', (t) => {
+  stub(board, 'isWinner').returns(true);
+  t.is(board.getWinner('board', 'player'), 'player');
+});
+
+test('getWinner returns 0 if draw', (t) => {
+  const board1 = new Board();
+  stub(board1, 'isWinner').returns(false);
+  stub(board1, 'isBoardFull').returns(true);
+  t.is(board1.getWinner('board', 'player'), 0);
+});
+
+test('getWinner returns undefined if game not over', (t) => {
+  const board1 = new Board();
+  stub(board1, 'isWinner').returns(false);
+  stub(board1, 'isBoardFull').returns(false);
+  t.is(board1.getWinner('board', 'player'), undefined);
 });

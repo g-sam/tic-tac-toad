@@ -17,6 +17,10 @@ test('tests can access mock dom', (t) => {
   t.truthy(t.context.$);
 });
 
+test('display "configure" title if no board data', (t) => {
+  t.is(t.context.$(t.context.renderBoard()).text(), 'CONFIGURE');
+});
+
 test('board is inserted into dom', (t) => {
   const boardTokens = [{ text: 'x' }, { text: '' }, { text: 'x' }, { text: 'o' }, { text: '' }, { text: '' }, { text: '' }, { text: '' }, { text: 'o' }];
   t.context.renderBoard(boardTokens);
@@ -64,4 +68,13 @@ test('board is inserted into dom with correct attributes', (t) => {
   t.context.$('td').each((idx, el) => t.context.$(el).click());
   t.deepEqual(actualClasses, expectedClasses);
   t.is(clickHandler.callCount, 5);
+});
+
+test('delayedRender passes its argument to requestAnimationFrame', (t) => {
+  const window = t.context.window;
+  window.requestAnimationFrame = spy();
+  t.context.delayedRender('arg');
+  t.deepEqual(window.requestAnimationFrame.args[0], ['arg']);
+  t.context.delayedRender();
+  t.deepEqual(window.requestAnimationFrame.args[1], undefined);
 });

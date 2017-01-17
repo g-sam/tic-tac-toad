@@ -1,17 +1,13 @@
-import { getBestMove } from './ai';
-import {
-  getEmptyBoard,
-  isBoardFull,
-  isWinner,
-  movePlayerToIndex,
-  switchPlayer,
-} from './board';
+import AI from './ai';
+import Board from './board';
 
 export default class Logic {
-  getBestMove = getBestMove;
-  getEmptyBoard = getEmptyBoard;
-  isBoardFull = isBoardFull;
-  isWinner = isWinner;
-  movePlayerToIndex = movePlayerToIndex;
-  switchPlayer = switchPlayer;
+  getBestMove = new AI().getBestMove;
+  board = new Board();
+  getEmptyBoard = this.board.getEmptyBoard;
+  isBoardFull = this.board.isBoardFull;
+  isWinner = this.board.isWinner;
+  getWinner = this.board.getWinner;
+  movePlayerToIndex = this.board.movePlayerToIndex;
+  switchPlayer = this.board.switchPlayer;
 }

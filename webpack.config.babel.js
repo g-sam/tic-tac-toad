@@ -20,6 +20,15 @@ const config = {
       },
     }],
   },
+  devServer: {
+    stats: {
+      colors: true,
+      hash: false,
+      version: false,
+      assets: false,
+      chunks: false,
+    },
+  },
 };
 
 export default config;
